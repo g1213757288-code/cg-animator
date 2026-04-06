@@ -799,26 +799,30 @@ function safeLocalStorageSet(key, value) { try { localStorage.setItem(key, value
 function getValidHostname(url) { if (!url || !/^https?:\/\//i.test(url)) return ''; try { return new URL(url).hostname.replace(/^www\./i,''); } catch(e) { return ''; } }
 function getWebsiteFavicon(url) { const h = getValidHostname(url); return h ? `https://favicon.baidu.com/favicon?domain=${h}` : ''; }
 
-// 如果是管理员，修改存到本地缓存，防止刷新丢失；如果不是管理员，不存本地。
 function saveTools() { if(isAdmin) safeLocalStorageSet('admin_tools', JSON.stringify(tools)); }
 function saveCats() { if(isAdmin) safeLocalStorageSet('admin_cats', JSON.stringify(catNameMap)); }
 function saveVisitCounts() { safeLocalStorageSet('visitCounts', JSON.stringify(visitCounts)); }
 function saveFavorites() { safeLocalStorageSet('favorites', JSON.stringify(favorites)); }
 
+// ==========================================
+// 核心更新 1：每个人只读取自己本地的点击次数，互不干扰
+// ==========================================
 function loadData() {
   const savedVisits = localStorage.getItem('visitCounts'); 
   const savedFavs = localStorage.getItem('favorites');
+  
+  // 每个人（包括你）都只读取自己浏览器里独立的点击次数和收藏夹
   visitCounts = savedVisits ? JSON.parse(savedVisits) : {};
   favorites = savedFavs ? JSON.parse(savedFavs) : {};
 
   if (isAdmin) {
-    // 管理员优先加载本地修改过的数据，如果没有则加载默认数据
+    // 管理员：读取本地正在编辑的草稿，如果没有草稿再读 GitHub 上的默认数据
     const savedTools = localStorage.getItem('admin_tools'); 
     const savedCats = localStorage.getItem('admin_cats');
     tools = savedTools ? JSON.parse(savedTools) : JSON.parse(JSON.stringify(DEFAULT_DATA.tools));
     catNameMap = savedCats ? JSON.parse(savedCats) : JSON.parse(JSON.stringify(DEFAULT_DATA.cats));
   } else {
-    // 普通游客只读取固定写入代码里的 DEFAULT_DATA
+    // 普通访客：直接读取你在 GitHub 上更新的最新卡片数据
     tools = JSON.parse(JSON.stringify(DEFAULT_DATA.tools));
     catNameMap = JSON.parse(JSON.stringify(DEFAULT_DATA.cats));
   }
@@ -844,7 +848,6 @@ function updateLoginUI() {
 
 document.getElementById('loginBtn').onclick = () => {
   if (isAdmin) {
-    // 直接退出
     isAdmin = false;
     localStorage.removeItem('isAdmin');
     loadData(); renderTabs(); render(); updateLoginUI(); closeModals();
@@ -861,7 +864,6 @@ document.getElementById('confirmLoginBtn').onclick = () => {
   if (pass === ADMIN_PASSWORD) {
     isAdmin = true;
     localStorage.setItem('isAdmin', 'true');
-    // 把当前写死的数据同步到本地缓存一份作为起始编辑状态
     safeLocalStorageSet('admin_tools', JSON.stringify(DEFAULT_DATA.tools));
     safeLocalStorageSet('admin_cats', JSON.stringify(DEFAULT_DATA.cats));
     loadData(); renderTabs(); render(); updateLoginUI(); closeModals();
@@ -960,7 +962,7 @@ function render() {
 
 list.addEventListener('click', (e) => { const card = e.target.closest('.tool-card'); if (!card) return; if (isDragging) { e.preventDefault(); return; } incrementVisitCount(card.dataset.url); });
 list.addEventListener('contextmenu', (e) => { 
-  if (!isAdmin) return; // 只有管理员能右键
+  if (!isAdmin) return;
   const card = e.target.closest('.tool-card'); if (!card) return; e.preventDefault(); currentEditIndex = parseInt(card.dataset.index); contextMenu.style.display = 'block'; contextMenu.style.left = e.clientX + 'px'; contextMenu.style.top = e.clientY + 'px'; 
 });
 
@@ -982,6 +984,9 @@ document.getElementById('saveBtn').onclick = () => { const logo = document.getEl
 document.getElementById('saveAddCatBtn').onclick = () => { const id = document.getElementById('newCatId').value.trim(); const name = document.getElementById('newCatDisplayName').value.trim(); if(!id || !name || !/^[a-zA-Z0-9_]+$/.test(id)){alert('格式错误'); return;} if(catNameMap[id]){alert('已存在'); return;} catNameMap[id] = name; saveCats(); renderTabs(); closeModals(); };
 document.getElementById('saveEditCatBtn').onclick = () => { const id = document.getElementById('editCatId').value.trim(); const name = document.getElementById('editCatDisplayName').value.trim(); if(!name){alert('名称不能为空'); return;} catNameMap[id] = name; saveCats(); renderTabs(); closeModals(); };
 
+// ==========================================
+// 核心更新 2：只导出网站分类和数据，防止污染别人的访问次数
+// ==========================================
 function exportData() { 
   const dataObj = { cats: catNameMap, tools: tools };
   const dataStr = JSON.stringify(dataObj, null, 2); 
@@ -1025,7 +1030,6 @@ let searchTimeout; search.oninput = (e) => { clearTimeout(searchTimeout); search
 search.onkeydown = e => { if(e.key === 'Enter'){ clearTimeout(searchTimeout); render(); } if(e.key === 'Escape'){ search.value = ''; search.blur(); clearTimeout(searchTimeout); render(); } };
 const themeBtn = document.getElementById('themeBtn'); themeBtn.onclick = () => { document.documentElement.classList.toggle('light'); themeBtn.textContent = document.documentElement.classList.contains('light') ? '深色' : '浅色'; };
 
-// 拖拽导入 (仅限管理员)
 document.body.addEventListener('dragover', e => { e.preventDefault(); }); 
 document.body.addEventListener('drop', e => { 
   e.preventDefault(); 
