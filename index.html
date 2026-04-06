@@ -106,7 +106,7 @@ header p { font-size: 16px; color: var(--text-secondary); max-width: 700px; marg
 .form-group input, .form-group select, .form-group textarea { padding: 10px 16px; border-radius: 12px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text); font-size: 14px; outline: none; caret-color: var(--accent); }
 .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
 .modal-buttons { display: flex; gap: 12px; margin-top: 12px; }
-.modal-btn { padding: 10px 16px; border-radius: 12px; border: none; font-size: 14px; font-weight: 50; cursor: pointer; transition: all 0.3s; flex: 1; }
+.modal-btn { padding: 10px 16px; border-radius: 12px; border: none; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s; flex: 1; }
 .btn-cancel { background: var(--tag-bg); color: var(--text-secondary); }
 .btn-save { background: var(--accent); color: #fff; }
 .btn-danger { background: rgba(255, 68, 68, 0.1); color: #ff4444; border: 1px solid rgba(255, 68, 68, 0.3); }
@@ -136,7 +136,7 @@ header p { font-size: 16px; color: var(--text-secondary); max-width: 700px; marg
       <input type="text" id="search" placeholder="搜索实用网站...">
     </div>
     <div class="nav-actions">
-      <button class="data-action-btn" id="loginBtn"><i class="fa-solid fa-lock"></i> <span id="currentUserDisp">管理员入口</span></button>
+      <button class="data-action-btn" id="loginBtn"><i class="fa-solid fa-lock" id="loginIcon"></i> <span id="currentUserDisp">管理员入口</span></button>
       <button class="data-action-btn admin-only" id="batchModeBtn"><i class="fa-solid fa-list-check"></i> 批量操作</button>
       <button class="data-action-btn admin-only" id="exportDataBtn"><i class="fa-solid fa-download"></i> 导出最新数据</button>
       <button class="data-action-btn admin-only" id="importDataBtn"><i class="fa-solid fa-upload"></i> 导入备份</button>
@@ -187,7 +187,6 @@ header p { font-size: 16px; color: var(--text-secondary); max-width: 700px; marg
       <input type="password" id="passwordInput" placeholder="密码">
     </div>
     <div class="modal-buttons">
-      <button class="modal-btn btn-danger" id="logoutBtn" style="display:none;">退出管理模式</button>
       <button class="modal-btn btn-cancel" id="cancelLoginBtn">取消</button>
       <button class="modal-btn btn-save" id="confirmLoginBtn">进入管理</button>
     </div>
@@ -281,9 +280,9 @@ header p { font-size: 16px; color: var(--text-secondary); max-width: 700px; marg
 </div>
 
 <script>
-/* ==========================================
-   ⭐ 在这里粘贴你之前导出的 DEFAULT_DATA 替换下面这部分
-   ========================================== */
+// ==========================================
+// 核心数据存放区（现在为空，请稍后直接拖拽你的备份文件进来即可自动填充）
+// ==========================================
 const DEFAULT_DATA = {
   "cats": {
     "model": "建模",
@@ -300,7 +299,7 @@ let tools = [];
 let catNameMap = {}; 
 let visitCounts = {}; 
 let favorites = {}; 
-let pinned = {}; // 新增置顶数据
+let pinned = {}; 
 let currentCat = 'all'; let currentEditIndex = -1; let currentEditCatId = ''; let isAddMode = false; let lastClickTime = {};
 let isDragging = false; let dragStartX = 0; let dragStartY = 0; let dragOffsetX = 0; let dragOffsetY = 0; let dragged = null; let dragStartIndex = -1;
 
@@ -337,7 +336,6 @@ function loadData() {
     const savedCats = localStorage.getItem('admin_cats');
     tools = savedTools ? JSON.parse(savedTools) : JSON.parse(JSON.stringify(DEFAULT_DATA.tools));
     catNameMap = savedCats ? JSON.parse(savedCats) : JSON.parse(JSON.stringify(DEFAULT_DATA.cats));
-    // 自动植入并生成私密分类
     if (!catNameMap['private']) { catNameMap['private'] = '🔒 未启用'; saveCats(); }
   } else {
     tools = JSON.parse(JSON.stringify(DEFAULT_DATA.tools));
@@ -345,18 +343,22 @@ function loadData() {
   }
 }
 
+// ⭐ 修复后的 UI 更新逻辑
 function updateLoginUI() {
   const disp = document.getElementById('currentUserDisp');
+  const icon = document.getElementById('loginIcon');
   const title = document.getElementById('headerTitle');
   const adminElems = document.querySelectorAll('.admin-only');
   
   if (isAdmin) {
     disp.textContent = "退出管理";
+    if(icon) { icon.classList.remove('fa-lock'); icon.classList.add('fa-unlock'); }
     title.textContent = `🛠 管理员模式 (修改后记得导出哦)`;
     document.getElementById('headerTitle').style.color = 'var(--accent)';
     adminElems.forEach(el => el.style.display = 'flex');
   } else {
     disp.textContent = '管理员入口';
+    if(icon) { icon.classList.remove('fa-unlock'); icon.classList.add('fa-lock'); }
     title.textContent = 'Personal Navigation Site';
     document.getElementById('headerTitle').style.color = 'var(--text)';
     adminElems.forEach(el => el.style.display = 'none');
@@ -373,14 +375,20 @@ function secretHash(str) {
   return hash.toString(36);
 }
 
+// ⭐ 修复后的按钮点击逻辑（能弹出密码框，也能点击退出）
 document.getElementById('loginBtn').onclick = () => {
   if (isAdmin) {
-    isAdmin = false;
-    isBatchMode = false;
-    document.getElementById('batchBar').style.display = 'none';
-    localStorage.removeItem('isAdmin');
-    loadData(); renderTabs(); render(); updateLoginUI(); closeModals();
+    // 退出逻辑
+    if (confirm("确定要退出管理员模式吗？")) {
+        isAdmin = false;
+        isBatchMode = false;
+        document.getElementById('batchBar').style.display = 'none';
+        localStorage.removeItem('isAdmin');
+        loadData(); renderTabs(); render(); updateLoginUI(); closeModals();
+        alert("已成功退出！恢复为访客模式。");
+    }
   } else {
+    // 登录逻辑
     document.getElementById('passwordInput').value = '';
     document.getElementById('loginModal').classList.add('show');
     overlay.classList.add('show');
@@ -391,7 +399,6 @@ document.getElementById('loginBtn').onclick = () => {
 document.getElementById('confirmLoginBtn').onclick = () => {
   const pass = document.getElementById('passwordInput').value.trim();
   
-  // 你的专属哈希密码，对应 "MrChiu"
   if (secretHash(pass) === "-wspm4q") { 
     isAdmin = true;
     localStorage.setItem('isAdmin', 'true');
@@ -407,15 +414,13 @@ document.getElementById('cancelLoginBtn').onclick = () => closeModals();
 
 // 批量模式控制
 document.getElementById('batchModeBtn').onclick = () => {
-  isBatchMode = true;
-  selectedCards.clear();
+  isBatchMode = true; selectedCards.clear();
   document.getElementById('batchCount').textContent = `已选择 0 个`;
   document.getElementById('batchBar').style.display = 'flex';
   render();
 };
 document.getElementById('batchCancelBtn').onclick = () => {
-  isBatchMode = false;
-  selectedCards.clear();
+  isBatchMode = false; selectedCards.clear();
   document.getElementById('batchBar').style.display = 'none';
   render();
 };
@@ -478,7 +483,6 @@ function renderTabs() {
   const norm = []; const hasUncat = !!catNameMap.uncat; const allKeys = new Set([...Object.keys(catNameMap), ...tools.map(t=>t.cat)]);
   allKeys.forEach(k => { 
     if (k && k!=='all' && k!=='uncat') {
-      // 私密分类仅对管理员可见
       if (!isAdmin && k === 'private') return;
       norm.push(k); 
     }
@@ -498,12 +502,10 @@ function renderTabs() {
   });
   document.getElementById('addCatBtn').onclick = () => { document.getElementById('addCatModal').classList.add('show'); overlay.classList.add('show'); document.getElementById('newCatId').value=''; document.getElementById('newCatDisplayName').value=''; };
   
-  // 更新常规编辑的下拉框
   const sel = document.getElementById('editCat'); sel.innerHTML = '';
   norm.forEach(c => { const o=document.createElement('option'); o.value=c; o.textContent=catNameMap[c]||c; sel.appendChild(o); });
   if (hasUncat) { const o=document.createElement('option'); o.value='uncat'; o.textContent=catNameMap.uncat; sel.appendChild(o); }
   
-  // 更新批量操作的下拉框
   const batchSel = document.getElementById('batchCatSelect');
   if (batchSel) {
     batchSel.innerHTML = '';
@@ -516,16 +518,12 @@ function renderTabs() {
 function render() {
   list.innerHTML = ''; let shown = 0; const fragment = document.createDocumentFragment();
   const sortedTools = tools.map((t, i) => ({ ...t, originalIndex: i })).sort((a, b) => {
-    // 优先级 1： 置顶
     const aPin = pinned[a.url] ? 1 : 0; const bPin = pinned[b.url] ? 1 : 0;
     if (aPin !== bPin) return bPin - aPin;
-    // 优先级 2： 收藏
     const aFav = favorites[a.url] ? 1 : 0; const bFav = favorites[b.url] ? 1 : 0;
     if (aFav !== bFav) return bFav - aFav; 
-    // 优先级 3： 访问次数
     const aCount = visitCounts[a.url] || 0; const bCount = visitCounts[b.url] || 0;
     if (aCount !== bCount) return bCount - aCount; 
-    // 默认原始顺序
     return a.originalIndex - b.originalIndex; 
   });
   
@@ -533,12 +531,8 @@ function render() {
   
   sortedTools.forEach((t) => {
     const i = t.originalIndex; 
-    
     if (currentCat !== 'all' && t.cat !== currentCat) return;
-    
-    // 私密分类：非管理员直接跳过
     if (t.cat === 'private' && !isAdmin) return;
-    // 隐藏卡片：非管理员直接跳过
     if (t.hidden && !isAdmin) return; 
 
     if (searchTerms.length > 0) { const targetText = (t.name + ' ' + t.tag).toLowerCase(); if (!searchTerms.every(term => targetText.includes(term))) return; }
@@ -547,16 +541,13 @@ function render() {
     card.className = 'tool-card'; 
     card.href = t.url; card.target = '_blank'; card.rel = 'noopener noreferrer'; card.dataset.index = i; card.dataset.url = t.url;
     
-    // 权限及模式判定
     if(isAdmin && !isBatchMode) card.classList.add('draggable');
     if(isBatchMode) card.classList.add('batch-selectable');
     if (t.hidden && isAdmin) card.classList.add('is-hidden');
 
-    // 图标指示器
     if (pinned[t.url]) { const pin = document.createElement('div'); pin.className = 'pin-icon'; pin.innerHTML = '<i class="fa-solid fa-thumbtack"></i>'; card.appendChild(pin); }
     if (favorites[t.url]) { const star = document.createElement('div'); star.className = 'favorite-star'; star.innerHTML = '<i class="fa-solid fa-star"></i>'; card.appendChild(star); }
     
-    // 批量模式的复选框
     if (isBatchMode) {
       const chk = document.createElement('div'); chk.className = 'batch-checkbox';
       card.appendChild(chk);
@@ -571,7 +562,6 @@ function render() {
   
   if (shown === 0) { const hint = document.createElement('div'); hint.className = 'empty-hint'; hint.textContent = search.value ? '无搜索结果' : '当前分类暂无内容'; fragment.appendChild(hint); }
   
-  // 批量模式下不显示添加卡片按钮
   if (isAdmin && !isBatchMode) {
     const addCard = document.createElement('div'); addCard.className = 'add-tool-card'; addCard.innerHTML = '+';
     addCard.style.display = 'flex';
@@ -584,13 +574,12 @@ function render() {
   if (isAdmin) initDrag();
 }
 
-// 卡片点击逻辑 (处理批量选择)
 list.addEventListener('click', (e) => { 
   const card = e.target.closest('.tool-card'); 
   if (!card) return; 
   
   if (isBatchMode) {
-    e.preventDefault(); // 阻止打开链接
+    e.preventDefault(); 
     const idx = parseInt(card.dataset.index);
     if (selectedCards.has(idx)) {
       selectedCards.delete(idx); card.classList.remove('batch-selected');
@@ -605,10 +594,8 @@ list.addEventListener('click', (e) => {
   incrementVisitCount(card.dataset.url); 
 });
 
-// 所有人的右键菜单
 list.addEventListener('contextmenu', (e) => { 
-  if (isBatchMode) { e.preventDefault(); return; } // 批量操作时禁用右键
-  
+  if (isBatchMode) { e.preventDefault(); return; } 
   const card = e.target.closest('.tool-card'); if (!card) return; e.preventDefault(); 
   currentEditIndex = parseInt(card.dataset.index); 
   
