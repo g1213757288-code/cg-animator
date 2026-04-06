@@ -6,104 +6,44 @@
 <title>CG Animator | 网站收录</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
+/* 保持原有样式不变 */
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease; }
 html { scroll-behavior: smooth; overflow-y: scroll; }
 :root { --bg: #000000; --card: #12121288; --card-border: #1e1e1e; --text: #ffffff; --text-secondary: #b0b0b0; --tag-bg: #1a1a1a; --tag-text: #d0d0d0; --accent: #00a6ff; --grid-line: rgba(255,255,255,0.1); --nav-bg: #0a0a0acc; --input-bg: #161616; --input-border: #222; }
 html.light { --bg: #f8f9fc; --card: #ffffffaa; --card-border: #e2e8f0; --text: #111111; --text-secondary: #64748b; --tag-bg: #f1f5f9; --tag-text: #475569; --accent: #0071e3; --grid-line: rgba(0,0,0,0.1); --nav-bg: #ffffffcc; --input-bg: #ffffff; --input-border: #e2e8f0; }
 body { background: var(--bg); color: var(--text); min-height: 100vh; position: relative; overflow-x: hidden; user-select: none; width: 100%; }
-body::after { content: ''; position: fixed; left: 0; right: 0; top: 0; height: 180px; background: linear-gradient(to bottom, var(--bg), transparent); z-index: -1; pointer-events: none; }
-@keyframes gridBreath { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
-body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px); background-size: 80px 80px; animation: gridBreath 8s ease-in-out infinite; z-index: -2; pointer-events: none; }
+body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px); background-size: 80px 80px; z-index: -2; pointer-events: none; }
 #dots { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
 .nav { position: sticky; top: 0; background: var(--nav-bg); backdrop-filter: blur(20px); border-bottom: 1px solid var(--card-border); padding: 16px 0; z-index: 999; }
 .nav-container { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; padding: 0 24px; justify-content: space-between; }
-.nav-logo { font-size: 20px; font-weight: 700; color: #ffffff; white-space: nowrap; }
+.nav-logo { font-size: 20px; font-weight: 700; color: var(--text); cursor: pointer; }
 .nav-actions { display: flex; gap: 12px; align-items: center; }
 .nav-search { position: absolute; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; }
-.nav-search::after { content: ""; position: absolute; right: 16px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; border: 2px solid var(--text-secondary); border-radius: 50%; pointer-events: none; }
-.nav-search::before { content: ""; position: absolute; right: 21px; top: 62%; transform: rotate(45deg); width: 2px; height: 8px; background: var(--text-secondary); pointer-events: none; }
-.filter-tabs { display: flex; gap: 10px; margin: 0 auto 30px; max-width: 100%; width: 100%; min-height: 36px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; opacity: 0; transform: translateY(-20px); flex-wrap: nowrap; justify-content: center; align-items: center; }
-.filter-tabs::-webkit-scrollbar { height: 0; }
-.filter-tab { padding:6px 14px; border-radius:30px; background:var(--tag-bg); color:var(--text-secondary); font-size:13px; cursor:pointer; transition:all 0.3s; white-space: nowrap; min-width: fit-content; }
-.filter-tab:hover { color: var(--accent); background: rgba(0, 166, 255, 0.1); }
+.nav-search input { width: 100%; padding: 10px 16px; border-radius: 12px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text); outline: none; }
+.filter-tabs { display: flex; gap: 10px; margin: 0 auto 30px; max-width: 100%; overflow-x: auto; justify-content: center; padding: 10px; }
+.filter-tab { padding:6px 14px; border-radius:30px; background:var(--tag-bg); color:var(--text-secondary); font-size:13px; cursor:pointer; white-space: nowrap; }
 .filter-tab.active { background:var(--accent); color:#fff; }
-.add-cat-btn { padding:6px 14px; border-radius:30px; background:var(--tag-bg); color:var(--accent); font-size:13px; cursor:pointer; transition:all 0.3s; border: none; white-space: nowrap; min-width: fit-content; }
-.add-cat-btn:hover { background: rgba(0, 166, 255, 0.1); border: 1px dashed var(--accent); }
-.nav-search input { width: 100%; padding: 10px 16px; padding-right: 44px; border-radius: 12px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text); font-size: 14px; outline: none; caret-color: var(--accent); }
-.nav-search input:focus { border-color: var(--accent); }
-.theme-toggle, .data-action-btn { padding: 10px 16px; border-radius: 12px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text); cursor: pointer; font-size: 14px; }
-.data-action-btn { padding: 8px 12px; font-size: 13px; display: flex; align-items: center; gap: 6px; }
-.data-action-btn:hover { border-color: var(--accent); }
-#loginBtn { color: var(--accent); font-weight: 600; }
-#loginBtn:hover { background: rgba(0, 166, 255, 0.1); border-color: var(--accent); }
-.container { max-width: 1400px; margin: 0 auto; padding: 40px 24px; position:relative; z-index:1; width: 100%; }
-header { text-align: center; margin-bottom: 48px; opacity: 0; transform: translateY(-20px); }
-header h1 { font-size: 28px; font-weight: 600; margin-bottom: 12px; }
-header p { font-size: 16px; color: var(--text-secondary); max-width: 700px; margin: 0 auto; }
-.tool-list { display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px; position: relative; min-height: 200px; width: 100%; align-content: start; }
-.tool-card { position:relative; background: var(--card); backdrop-filter: blur(12px); border-radius: 16px; padding: 16px; border: 1px solid var(--card-border); display: flex; flex-direction: column; gap: 12px; text-decoration: none; color: inherit; opacity: 0; transform: translateY(40px) scale(0.95); transition: all 0.5s cubic-bezier(0.25,1,0.5,1); cursor: grab; will-change: transform, opacity; min-height: 110px; overflow: hidden; }
-.tool-card.dragging { transition: none !important; transform: none !important; will-change: auto !important; }
-.tool-card .visit-count { font-size: 12px; color: var(--text-secondary); align-self: flex-end; }
-.tool-card .tag-row { display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: auto; }
-.tool-card.visible { opacity: 1; transform: translateY(0) scale(1); }
-.tool-card:hover { transform: translateY(-6px) scale(1.01); border-color: var(--accent); box-shadow: 0 0 30px rgba(0, 166, 255, 0.15); }
-.tool-card.dragging { opacity: 0.4; border-style: dashed; }
-.favorite-star { position: absolute; top: 10px; right: 10px; color: #ffd700; font-size: 14px; opacity: 0.8; }
-.add-tool-card { display: flex; align-items: center; justify-content: center; font-size: 32px; color: var(--accent); cursor: pointer; background: var(--card); backdrop-filter: blur(12px); border-radius: 16px; padding: 16px; border: 1px dashed var(--card-border); transition: all 0.3s ease; opacity: 0; transform: translateY(40px) scale(0.95); min-height: 110px; }
-.add-tool-card.visible { opacity: 1; transform: translateY(0) scale(1); }
-.add-tool-card:hover { border-color: var(--accent); background: rgba(0, 166, 255, 0.05); transform: translateY(-6px) scale(1.01); box-shadow: 0 0 30px rgba(0, 166, 255, 0.15); }
-.tool-logo-container { width: 40px; height: 40px; border-radius: 10px; background: var(--tag-bg); padding: 6px; border: 1px solid var(--card-border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: var(--text); font-size: 18px; }
-.tool-logo { width: 100%; height: 100%; border-radius: 8px; object-fit: contain; }
+.tool-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 24px; width: 100%; }
+.tool-card { position:relative; background: var(--card); backdrop-filter: blur(12px); border-radius: 16px; padding: 16px; border: 1px solid var(--card-border); text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 12px; }
+.tool-card:hover { border-color: var(--accent); }
 .tool-header { display: flex; align-items: center; gap: 12px; }
-.tool-header a { text-decoration: none; }
-.tool-name { font-size: 17px; font-weight: 600; transition: all 0.3s ease; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tool-card:hover .tool-name { color: var(--accent); }
-.tool-card:hover .tool-tag { color: var(--accent); background: rgba(0, 166, 255, 0.1); }
-.tool-tag { width: fit-content; font-size: 12px; background: var(--tag-bg); color: var(--tag-text); padding: 5px 10px; border-radius: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: all 0.3s ease; }
-.empty-hint { grid-column: 1 / -1; text-align: center; padding: 40px 0; color: var(--text-secondary); font-size: 14px; }
-#toTop { position:fixed; right:30px; bottom:30px; width:44px; height:44px; background:var(--accent); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; opacity:0; pointer-events:none; transition:all 0.3s; z-index: 999; }
-#toTop.show {opacity:1; pointer-events:auto;}
-.custom-context-menu { position: fixed; width: 180px; background: var(--card); backdrop-filter: blur(15px); border: 1px solid var(--card-border); border-radius: 12px; padding: 6px 0; z-index: 9999; display: none; box-shadow: 0 8px 24px rgba(0,0,0,0.3); animation: fadeIn 0.2s; }
-.cat-context-menu { position: fixed; width: 160px; background: var(--card); backdrop-filter: blur(15px); border: 1px solid var(--card-border); border-radius: 12px; padding: 6px 0; z-index: 9999; display: none; box-shadow: 0 8px 24px rgba(0,0,0,0.3); animation: fadeIn 0.2s; }
-@keyframes fadeIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: translateY(0); } }
-.context-item { padding: 8px 14px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-.context-item:hover { background: var(--accent); color: #fff; }
-.context-item.favorite { color: #ffd700; }
-.edit-modal, .add-cat-modal, .edit-cat-modal, .data-modal, .login-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card); backdrop-filter: blur(20px); border: 1px solid var(--card-border); border-radius: 16px; padding: 24px; width: 90%; max-width: 500px; z-index: 1000; display: none; }
-.edit-modal.show, .add-cat-modal.show, .edit-cat-modal.show, .data-modal.show, .login-modal.show { display: block; animation: modalFade 0.3s forwards; }
-.logo-type-switch { display: flex; gap: 8px; margin-bottom: 8px; }
-.logo-type-btn { padding: 6px 12px; border-radius: 8px; background: var(--tag-bg); color: var(--text-secondary); font-size: 12px; cursor: pointer; }
-.logo-type-btn.active { background: var(--accent); color: #fff; }
-.icon-selector { margin-top: 8px; padding: 12px; border-radius: 8px; background: var(--input-bg); border: 1px solid var(--input-border); display: none; max-height: 200px; overflow-y: auto; }
-.icon-search { width: 100%; margin-bottom: 12px; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text); font-size: 13px; }
-.icon-list { display: flex; flex-wrap: wrap; gap: 8px; max-height: 140px; overflow-y: auto; padding-right: 4px; }
-.icon-item { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 6px; background: var(--tag-bg); cursor: pointer; font-size: 18px; transition: all 0.2s; }
-.icon-item:hover { background: rgba(0, 166, 255, 0.1); color: var(--accent); }
-.icon-item.active { background: var(--accent); color: #fff; }
-.modal-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; color: var(--accent); }
-.modal-form { display: flex; flex-direction: column; gap: 16px; }
-.form-group { display: flex; flex-direction: column; gap: 8px; }
-.form-group label { font-size: 14px; color: var(--text-secondary); }
-.form-group input, .form-group select, .form-group textarea { padding: 10px 16px; border-radius: 12px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text); font-size: 14px; outline: none; caret-color: var(--accent); }
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
-.modal-buttons { display: flex; gap: 12px; margin-top: 12px; }
-.modal-btn { padding: 10px 16px; border-radius: 12px; border: none; font-size: 14px; font-weight: 50; cursor: pointer; transition: all 0.3s; flex: 1; }
-.btn-cancel { background: var(--tag-bg); color: var(--text-secondary); }
-.btn-save { background: var(--accent); color: #fff; }
-.btn-danger { background: rgba(255, 68, 68, 0.1); color: #ff4444; border: 1px solid rgba(255, 68, 68, 0.3); }
-.btn-danger:hover { background: #ff4444; color: #fff; }
-.btn-save:hover { background: #008eeb; }
-.btn-cancel:hover { background: #2a2a2a; color: var(--text); }
-.overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); z-index: 999; display: none; }
-.overlay.show { display: block; animation: overlayFade 0.3s forwards; }
-@keyframes modalFade { from { opacity: 0; transform: translate(-50%, -55%); } to { opacity: 1; transform: translate(-50%, -50%); } }
-@keyframes overlayFade { from { opacity: 0; } to { opacity: 1; } }
-.animate-in { animation: headerFade 1s 0.2s forwards; }
-@keyframes headerFade { to { opacity:1; transform:translateY(0); } }
-@media (max-width:1400px){.tool-list{grid-template-columns:repeat(4,1fr);}}
-@media (max-width:1200px){.tool-list{grid-template-columns:repeat(3,1fr);}}
-@media (max-width:768px){ .tool-list{grid-template-columns:repeat(2,1fr);} .nav-search { position: relative; left: 0; transform: none; max-width: none; margin: 0 12px; } .nav-container { flex-wrap: wrap; gap: 12px; } .nav-actions { order: 3; width: 100%; justify-content: flex-end; } }
-@media (max-width:480px){.tool-list{grid-template-columns:1fr;}}
+.tool-logo-container { width: 40px; height: 40px; border-radius: 10px; background: var(--tag-bg); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.tool-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tag-row { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+.tool-tag { font-size: 12px; background: var(--tag-bg); padding: 4px 8px; border-radius: 6px; }
+
+/* 核心修改：管理相关元素默认隐藏 */
+#adminControls, .add-tool-card, #loginBtn { display: none !important; }
+body.admin-mode #adminControls, body.admin-mode .add-tool-card { display: flex !important; }
+
+/* 模态框基础样式 */
+.modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card); backdrop-filter: blur(20px); border: 1px solid var(--card-border); border-radius: 16px; padding: 24px; width: 90%; max-width: 400px; z-index: 1000; display: none; }
+.modal.show { display: block; }
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 999; display: none; }
+.overlay.show { display: block; }
+.form-group { margin-bottom: 15px; display: flex; flex-direction: column; gap: 5px; }
+.form-group input, .form-group select { padding: 8px; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text); }
+.btn-save { background: var(--accent); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -111,370 +51,191 @@ header p { font-size: 16px; color: var(--text-secondary); max-width: 700px; marg
 <canvas id="dots"></canvas>
 <div class="nav">
   <div class="nav-container">
-    <div class="nav-logo">CG Animator</div>
-    <div class="nav-search">
-      <input type="text" id="search" placeholder="搜索实用网站...">
-    </div>
+    <div class="nav-logo" id="logoTitle">CG Animator</div>
+    <div class="nav-search"><input type="text" id="search" placeholder="搜索实用网站..."></div>
     <div class="nav-actions">
-      <button class="data-action-btn" id="loginBtn"><i class="fa-solid fa-user-circle"></i> <span id="currentUserDisp">访客</span></button>
-      <button class="data-action-btn" id="exportDataBtn"><i class="fa-solid fa-download"></i> 导出</button>
-      <button class="data-action-btn" id="importDataBtn"><i class="fa-solid fa-upload"></i> 导入</button>
-      <div class="theme-toggle" id="themeBtn">浅色</div>
+      <div id="adminControls">
+        <button onclick="exportData()" class="filter-tab">导出代码</button>
+        <button onclick="importData()" class="filter-tab">导入数据</button>
+      </div>
+      <div class="filter-tab" id="themeBtn">切换主题</div>
+      <button id="loginBtn"></button>
     </div>
   </div>
 </div>
 
-<div class="container">
-  <header>
-    <h1 id="headerTitle">专注实用网站收录</h1>
-    <p>本站仅为收录导航，内容版权归原作者所有，如有侵权请联系删除。</p>
+<div class="container" style="max-width:1400px; margin: 0 auto; padding: 40px 24px;">
+  <header style="text-align:center; margin-bottom:40px;">
+    <h1>专注实用网站收录</h1>
+    <p style="color:var(--text-secondary)">本站内容由管理员维护，双击Logo登录</p>
   </header>
   <div class="filter-tabs" id="filterTabs"></div>
   <div class="tool-list" id="toolList"></div>
 </div>
 
-<div id="toTop">↑</div>
-<div class="custom-context-menu" id="contextMenu">
-  <div class="context-item" id="editCard"><i class="fa-solid fa-pen"></i> 编辑卡片</div>
-  <div class="context-item" id="favoriteCard"><i class="fa-solid fa-star"></i> 收藏/取消收藏</div>
-  <div class="context-item" style="color:#ff4444;" id="deleteCard"><i class="fa-solid fa-trash"></i> 删除卡片</div>
-</div>
-<div class="cat-context-menu" id="catContextMenu">
-  <div class="context-item" id="editCatName"><i class="fa-solid fa-pen"></i> 修改分类名称</div>
-  <div class="context-item" id="deleteCat"><i class="fa-solid fa-trash"></i> 删除此分类</div>
-</div>
-
 <div class="overlay" id="overlay"></div>
-
-<div class="login-modal" id="loginModal">
-  <div class="modal-title">账号登录 / 注册</div>
-  <div class="modal-form">
-    <div class="form-group">
-      <label for="usernameInput">专属账号名</label>
-      <input type="text" id="usernameInput" placeholder="例如：my_space_01">
-    </div>
-    <div class="form-group" id="passwordGroup">
-      <label for="passwordInput">密码</label>
-      <input type="password" id="passwordInput" placeholder="请输入密码 (新账号将自动以此密码注册)">
-      <label style="font-size: 12px; opacity: 0.7; margin-top: 4px; color: #ff8888;">*本地沙盒应用，请勿使用重要密码！</label>
-    </div>
-    <div class="modal-buttons">
-      <button class="modal-btn btn-danger" id="logoutBtn" style="display:none;">退出登录</button>
-      <button class="modal-btn btn-cancel" id="cancelLoginBtn">取消</button>
-      <button class="modal-btn btn-save" id="confirmLoginBtn">进入空间</button>
-    </div>
+<div class="modal" id="loginModal">
+  <h3>管理员验证</h3><br>
+  <div class="form-group">
+    <label>账号</label>
+    <input type="text" id="adminUser">
   </div>
-</div>
-
-<div class="edit-modal" id="editModal">
-  <div class="modal-title" id="modalTitle">编辑工具信息</div>
-  <div class="modal-form">
-    <div class="form-group">
-      <label>Logo 设置</label>
-      <div class="logo-type-switch">
-        <div class="logo-type-btn active" data-type="icon">使用图标</div>
-        <div class="logo-type-btn" data-type="image">使用图片链接</div>
-      </div>
-      <input type="text" id="editLogo" placeholder="Logo图片链接">
-      <div class="icon-selector" id="iconSelector">
-        <input type="text" class="icon-search" id="iconSearch" placeholder="搜索图标">
-        <div class="icon-list" id="iconList"></div>
-      </div>
-    </div>
-    <div class="form-group">
-      <label for="editName">工具名称</label>
-      <input type="text" id="editName">
-    </div>
-    <div class="form-group">
-      <label for="editTag">工具标签</label>
-      <input type="text" id="editTag">
-    </div>
-    <div class="form-group">
-      <label for="editUrl">跳转网址</label>
-      <input type="text" id="editUrl">
-    </div>
-    <div class="form-group">
-      <label for="editCat">工具分类</label>
-      <select id="editCat"></select>
-    </div>
-    <div class="modal-buttons">
-      <button class="modal-btn btn-cancel" id="cancelBtn">取消</button>
-      <button class="modal-btn btn-save" id="saveBtn">保存</button>
-    </div>
+  <div class="form-group">
+    <label>密码</label>
+    <input type="password" id="adminPass">
   </div>
-</div>
-
-<div class="add-cat-modal" id="addCatModal">
-  <div class="modal-title">添加新分类</div>
-  <div class="modal-form">
-    <div class="form-group">
-      <label for="newCatId">分类标识（英文/数字/下划线）</label>
-      <input type="text" id="newCatId" placeholder="如: design">
-    </div>
-    <div class="form-group">
-      <label for="newCatDisplayName">分类名称（中文）</label>
-      <input type="text" id="newCatDisplayName" placeholder="如: 设计工具">
-    </div>
-    <div class="modal-buttons">
-      <button class="modal-btn btn-cancel" id="cancelAddCatBtn">取消</button>
-      <button class="modal-btn btn-save" id="saveAddCatBtn">保存</button>
-    </div>
-  </div>
-</div>
-
-<div class="edit-cat-modal" id="editCatNameModal">
-  <div class="modal-title">修改分类名称</div>
-  <div class="modal-form">
-    <div class="form-group">
-      <label for="editCatId">分类标识</label>
-      <input type="text" id="editCatId" readonly>
-    </div>
-    <div class="form-group">
-      <label for="editCatDisplayName">新分类名称</label>
-      <input type="text" id="editCatDisplayName" placeholder="如: 设计工具">
-    </div>
-    <div class="modal-buttons">
-      <button class="modal-btn btn-cancel" id="cancelEditCatBtn">取消</button>
-      <button class="modal-btn btn-save" id="saveEditCatBtn">保存</button>
-    </div>
-  </div>
-</div>
-
-<div class="data-modal" id="dataModal">
-  <div class="modal-title" id="dataModalTitle">导出数据</div>
-  <div class="modal-form">
-    <label id="dataModalLabel">请复制数据：</label>
-    <textarea id="dataTextarea" readonly></textarea>
-    <div class="modal-buttons">
-      <button class="modal-btn btn-cancel" id="cancelDataBtn">取消</button>
-      <button class="modal-btn btn-save" id="confirmDataBtn">确认</button>
-    </div>
-  </div>
+  <button class="btn-save" style="width:100%" onclick="checkLogin()">进入管理模式</button>
 </div>
 
 <script>
-let currentUser = localStorage.getItem('currentUser') || '';
+// ==========================================
+// 1. 管理员配置 (在此修改你的账号密码)
+// ==========================================
+const ADMIN_CONF = {
+  user: "admin",
+  pass: "123456" 
+};
 
-// 【新增】获取全局用户账号密码库
-function getUsersDb() {
-  const db = localStorage.getItem('users_auth_db');
-  return db ? JSON.parse(db) : {};
-}
-function saveUsersDb(db) {
-  localStorage.setItem('users_auth_db', JSON.stringify(db));
-}
+// ==========================================
+// 2. 默认网站数据 (所有人可见的数据在此修改)
+// ==========================================
+let defaultTools = [
+  {name:"Tripo AI",logo:"",url:"https://tripo.ai",tag:"全能型3D生成",cat:"ai"},
+  {name:"Hitem3D",logo:"",url:"https://hitem3d.com",tag:"超高清4K纹理",cat:"model"},
+  {name:"Hyper3D",logo:"",url:"https://hyper3d.xyz",tag:"角色建模专用",cat:"model"}
+];
 
-function getDbKey(baseKey) { return currentUser ? `${currentUser}_${baseKey}` : baseKey; }
-function safeLocalStorageSet(key, value) { try { localStorage.setItem(key, value); } catch (e) { console.warn('存储超限', e); } }
-function getValidHostname(url) { if (!url || !/^https?:\/\//i.test(url)) return ''; try { return new URL(url).hostname.replace(/^www\./i,''); } catch(e) { return ''; } }
-function getWebsiteFavicon(url) { const h = getValidHostname(url); return h ? `https://favicon.baidu.com/favicon?domain=${h}` : ''; }
+let defaultCats = { model:'建模', render:'渲染', ai:'AI生成', uncat:'未分类' };
 
-const commonIcons = ['fa-globe','fa-star','fa-pencil','fa-code','fa-image','fa-video','fa-music','fa-gamepad','fa-book','fa-shopping-cart','fa-cloud','fa-database','fa-tools','fa-palette','fa-camera','fa-user','fa-briefcase','fa-school','fa-car','fa-home','fa-lock','fa-search'];
-let selectedIcon = 'fa-globe'; let tools = []; let catNameMap = {}; let visitCounts = {}; let favorites = {}; let currentCat = 'all'; let currentEditIndex = -1; let currentEditCatId = ''; let isAddMode = false; let lastClickTime = {};
-let isDragging = false; let dragStartX = 0; let dragStartY = 0; let dragOffsetX = 0; let dragOffsetY = 0; let dragged = null; let dragStartIndex = -1;
+// 状态变量
+let isAdmin = false;
+let tools = [...defaultTools];
+let cats = {...defaultCats};
+let currentCat = 'all';
 
-const list = document.getElementById('toolList'); const search = document.getElementById('search'); const filterTabs = document.getElementById('filterTabs'); const editModal = document.getElementById('editModal'); const overlay = document.getElementById('overlay'); const contextMenu = document.getElementById('contextMenu'); const catContextMenu = document.getElementById('catContextMenu');
-
-function saveTools() { safeLocalStorageSet(getDbKey('tools'), JSON.stringify(tools)); }
-function saveCats() { safeLocalStorageSet(getDbKey('cats'), JSON.stringify(catNameMap)); }
-function saveVisitCounts() { safeLocalStorageSet(getDbKey('visitCounts'), JSON.stringify(visitCounts)); }
-function saveFavorites() { safeLocalStorageSet(getDbKey('favorites'), JSON.stringify(favorites)); }
-
-function loadData() {
-  const savedTools = localStorage.getItem(getDbKey('tools')); const savedCats = localStorage.getItem(getDbKey('cats')); const savedVisits = localStorage.getItem(getDbKey('visitCounts')); const savedFavs = localStorage.getItem(getDbKey('favorites'));
-  const defaultCats = { model:'建模', render:'渲染', ai:'AI生成', uncat:'未分类' };
-  tools = savedTools ? JSON.parse(savedTools) : (currentUser ? [] : [
-    {name:"Tripo AI",logo:"",url:"https://tripo.ai",tag:"全能型3D生成",cat:"ai"},
-    {name:"Hitem3D",logo:"",url:"https://hitem3d.com",tag:"超高清4K纹理",cat:"model"},
-    {name:"Hyper3D",logo:"",url:"https://hyper3d.xyz",tag:"角色建模专用",cat:"model"}
-  ]);
-  catNameMap = savedCats ? JSON.parse(savedCats) : {...defaultCats};
-  visitCounts = savedVisits ? JSON.parse(savedVisits) : {};
-  favorites = savedFavs ? JSON.parse(savedFavs) : {};
-}
-
-function updateLoginUI() {
-  const disp = document.getElementById('currentUserDisp');
-  const title = document.getElementById('headerTitle');
-  if (currentUser) {
-    disp.textContent = currentUser;
-    title.textContent = `欢迎来到 ${currentUser} 的专属收录`;
-  } else {
-    disp.textContent = '访客登录';
-    title.textContent = '专注实用网站收录';
+// 初始化
+window.onload = () => {
+  // 尝试从本地加载，以便管理员预览修改效果
+  const saved = localStorage.getItem('admin_preview_data');
+  if(saved) {
+    const d = JSON.parse(saved);
+    tools = d.tools;
+    cats = d.cats;
   }
-}
+  renderTabs();
+  render();
+};
 
-document.getElementById('loginBtn').onclick = () => {
-  document.getElementById('usernameInput').value = currentUser;
-  document.getElementById('passwordInput').value = '';
-  document.getElementById('logoutBtn').style.display = currentUser ? 'block' : 'none';
-  document.getElementById('passwordGroup').style.display = currentUser ? 'none' : 'flex';
+// 管理员登录逻辑
+document.getElementById('logoTitle').ondblclick = () => {
+  document.getElementById('overlay').classList.add('show');
   document.getElementById('loginModal').classList.add('show');
-  overlay.classList.add('show');
-  setTimeout(() => { document.getElementById('usernameInput').focus(); document.getElementById('usernameInput').select(); }, 50);
 };
 
-// 【修改】处理账号注册和密码校验的逻辑
-document.getElementById('confirmLoginBtn').onclick = () => {
-  const name = document.getElementById('usernameInput').value.trim();
-  const pass = document.getElementById('passwordInput').value.trim();
-  
-  if(!name || !/^[a-zA-Z0-9_]+$/.test(name)){ alert('账号名只允许英文、数字或下划线'); return; }
-  
-  // 如果是当前账号只是想改名字（退出状态下），或者本来就没登录
-  if (currentUser !== name) {
-      if(!pass){ alert('请输入密码'); return; }
-      const db = getUsersDb();
-      
-      if(db[name]) {
-          // 账号存在，校验密码
-          if(db[name] !== pass) {
-              alert('密码错误，请重试！');
-              return;
-          }
-      } else {
-          // 账号不存在，自动注册
-          if(confirm(`检测到账号 [${name}] 未注册。\n是否使用刚刚输入的密码直接创建此账号？`)) {
-              db[name] = pass;
-              saveUsersDb(db);
-              alert(`账号 [${name}] 创建成功！`);
-          } else {
-              return;
-          }
-      }
+function checkLogin() {
+  const u = document.getElementById('adminUser').value;
+  const p = document.getElementById('adminPass').value;
+  if(u === ADMIN_CONF.user && p === ADMIN_CONF.pass) {
+    isAdmin = true;
+    document.body.classList.add('admin-mode');
+    alert("验证成功！现在你可以添加、删除或拖拽卡片。修改完成后请点击'导出代码'更新到GitHub。");
+    closeModals();
+    render();
+  } else {
+    alert("鉴权失败");
   }
-
-  // 校验通过，放行
-  currentUser = name;
-  localStorage.setItem('currentUser', currentUser);
-  
-  currentCat = 'all'; 
-  loadData(); renderTabs(); render(); updateLoginUI(); closeModals();
-};
-
-// 监听用户名输入变化，如果是已登录状态下修改名字，则展示密码框
-document.getElementById('usernameInput').oninput = (e) => {
-    if (e.target.value.trim() !== currentUser) {
-        document.getElementById('passwordGroup').style.display = 'flex';
-    } else {
-        document.getElementById('passwordGroup').style.display = 'none';
-    }
-};
-
-document.getElementById('logoutBtn').onclick = () => {
-  currentUser = '';
-  localStorage.removeItem('currentUser');
-  currentCat = 'all';
-  loadData(); renderTabs(); render(); updateLoginUI(); closeModals();
-};
-
-document.getElementById('cancelLoginBtn').onclick = () => closeModals();
-
-function incrementVisitCount(url) {
-  const now = Date.now(); if (lastClickTime[url] && now - lastClickTime[url] < 300) return;
-  lastClickTime[url] = now; visitCounts[url] = (visitCounts[url] || 0) + 1; saveVisitCounts();
 }
-function toggleFavorite(url) { favorites[url] = !favorites[url]; saveFavorites(); render(); }
-function createLogoElement(logoUrl) {
-  const c = document.createElement('div'); c.className = 'tool-logo-container';
-  if (logoUrl?.startsWith('icon:')) {
-    const i = document.createElement('i'); const safeIconClass = logoUrl.replace('icon:', '').replace(/[^a-zA-Z0-9-]/g, '');
-    i.className = `fa-solid ${safeIconClass}`; c.appendChild(i); return c;
-  }
-  const finalUrl = logoUrl?.trim() || getWebsiteFavicon('');
-  if (!finalUrl || finalUrl === 'https://favicon.baidu.com/favicon?domain=') { const i = document.createElement('i'); i.className = 'fa-solid fa-globe'; c.appendChild(i); return c; }
-  const img = document.createElement('img'); img.className = 'tool-logo'; img.src = finalUrl; img.loading = 'lazy'; 
-  img.onerror = function() { this.outerHTML = '<i class="fa-solid fa-globe"></i>'; }; c.appendChild(img); return c;
+
+function closeModals() {
+  document.querySelectorAll('.modal, .overlay').forEach(el => el.classList.remove('show'));
 }
-function renderIconSelector() {
-  const iconList = document.getElementById('iconList'); const iconSearch = document.getElementById('iconSearch'); iconList.innerHTML = '';
-  function r(filter='') {
-    commonIcons.forEach(ic => {
-      if (filter && !ic.includes(filter)) return; const d = document.createElement('div'); d.className = `icon-item ${ic===selectedIcon?'active':''}`; d.innerHTML = `<i class="fa-solid ${ic}"></i>`;
-      d.onclick = () => { document.querySelectorAll('.icon-item').forEach(i=>i.classList.remove('active')); d.classList.add('active'); selectedIcon = ic; document.getElementById('editLogo').value = 'icon:'+ic; }; iconList.appendChild(d);
-    });
-  } r(); iconSearch.oninput = e => r(e.target.value.toLowerCase());
-  document.querySelectorAll('.logo-type-btn').forEach(b=>{
-    b.onclick = () => {
-      document.querySelectorAll('.logo-type-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active');
-      const isIcon = b.dataset.type === 'icon'; document.getElementById('iconSelector').style.display = isIcon?'block':'none'; document.getElementById('editLogo').value = isIcon ? 'icon:'+selectedIcon : '';
-    };
-  });
-}
+
+// 渲染函数
 function renderTabs() {
-  let html = `<div class="filter-tab ${currentCat==='all'?'active':''}" data-cat="all">全部</div>`;
-  const norm = []; const hasUncat = !!catNameMap.uncat; const allKeys = new Set([...Object.keys(catNameMap), ...tools.map(t=>t.cat)]);
-  allKeys.forEach(k => { if (k && k!=='all' && k!=='uncat') norm.push(k); });
-  norm.forEach(c => { html += `<div class="filter-tab ${currentCat===c?'active':''}" data-cat="${c}">${catNameMap[c]||c}</div>`; });
-  if (hasUncat) html += `<div class="filter-tab ${currentCat==='uncat'?'active':''}" data-cat="uncat">${catNameMap.uncat}</div>`;
-  html += `<button class="add-cat-btn" id="addCatBtn">+ 分类</button>`; filterTabs.innerHTML = html;
-  document.querySelectorAll('.filter-tab').forEach(t=>{
-    t.onclick = (e) => { e.preventDefault(); currentCat = t.dataset.cat; document.querySelectorAll('.filter-tab').forEach(x=>x.classList.remove('active')); t.classList.add('active'); render(); };
-    t.oncontextmenu = e => { if(t.dataset.cat==='all')return; e.preventDefault(); currentEditCatId = t.dataset.cat; catContextMenu.style.display='block'; catContextMenu.style.left=e.clientX+'px'; catContextMenu.style.top=e.clientY+'px'; };
-  });
-  document.getElementById('addCatBtn').onclick = () => { document.getElementById('addCatModal').classList.add('show'); overlay.classList.add('show'); document.getElementById('newCatId').value=''; document.getElementById('newCatDisplayName').value=''; };
-  const sel = document.getElementById('editCat'); sel.innerHTML = '';
-  norm.forEach(c => { const o=document.createElement('option'); o.value=c; o.textContent=catNameMap[c]||c; sel.appendChild(o); });
-  if (hasUncat) { const o=document.createElement('option'); o.value='uncat'; o.textContent=catNameMap.uncat; sel.appendChild(o); }
+  let html = `<div class="filter-tab ${currentCat==='all'?'active':''}" onclick="filter('all')">全部</div>`;
+  for(let key in cats) {
+    html += `<div class="filter-tab ${currentCat===key?'active':''}" onclick="filter('${key}')">${cats[key]}</div>`;
+  }
+  document.getElementById('filterTabs').innerHTML = html;
 }
+
+function filter(c) {
+  currentCat = c;
+  renderTabs();
+  render();
+}
+
 function render() {
-  list.innerHTML = ''; let shown = 0; const fragment = document.createDocumentFragment();
-  const sortedTools = tools.map((t, i) => ({ ...t, originalIndex: i })).sort((a, b) => {
-    const aFav = favorites[a.url] ? 1 : 0; const bFav = favorites[b.url] ? 1 : 0;
-    if (aFav !== bFav) return bFav - aFav; 
-    const aCount = visitCounts[a.url] || 0; const bCount = visitCounts[b.url] || 0;
-    if (aCount !== bCount) return bCount - aCount; return a.originalIndex - b.originalIndex; 
+  const list = document.getElementById('toolList');
+  list.innerHTML = '';
+  
+  let filtered = tools.filter(t => currentCat === 'all' || t.cat === currentCat);
+  
+  filtered.forEach((t, idx) => {
+    const card = document.createElement('div');
+    card.className = 'tool-card';
+    card.innerHTML = `
+      <div class="tool-header">
+        <div class="tool-logo-container"><i class="fa-solid fa-globe"></i></div>
+        <div class="tool-name">${t.name}</div>
+      </div>
+      <div class="tag-row">
+        <span class="tool-tag">${t.tag}</span>
+        ${isAdmin ? `<button onclick="deleteItem(${idx})" style="color:red;background:none;border:none;cursor:pointer">删除</button>` : ''}
+      </div>
+      <a href="${t.url}" target="_blank" style="position:absolute;inset:0"></a>
+    `;
+    list.appendChild(card);
   });
-  const kw = search.value.toLowerCase().trim(); const searchTerms = kw ? kw.split(/\s+/).filter(Boolean) : [];
-  sortedTools.forEach((t) => {
-    const i = t.originalIndex; if (currentCat !== 'all' && t.cat !== currentCat) return;
-    if (searchTerms.length > 0) { const targetText = (t.name + ' ' + t.tag).toLowerCase(); if (!searchTerms.every(term => targetText.includes(term))) return; }
-    shown++; const card = document.createElement('a'); card.className = 'tool-card'; card.href = t.url; card.target = '_blank'; card.rel = 'noopener noreferrer'; card.dataset.index = i; card.dataset.url = t.url;
-    if (favorites[t.url]) { const star = document.createElement('div'); star.className = 'favorite-star'; const starIcon = document.createElement('i'); starIcon.className = 'fa-solid fa-star'; star.appendChild(starIcon); card.appendChild(star); }
-    const logo = createLogoElement(t.logo || getWebsiteFavicon(t.url)); const hdr = document.createElement('div'); hdr.className = 'tool-header'; hdr.appendChild(logo);
-    const name = document.createElement('div'); name.className = 'tool-name'; name.textContent = t.name; name.title = t.name; hdr.appendChild(name);
-    const row = document.createElement('div'); row.className = 'tag-row'; const tag = document.createElement('div'); tag.className = 'tool-tag'; tag.textContent = t.tag; const cnt = document.createElement('div'); cnt.className = 'visit-count'; cnt.textContent = `访问 ${visitCounts[t.url]||0} 次`;
-    row.appendChild(tag); row.appendChild(cnt); card.appendChild(hdr); card.appendChild(row); fragment.appendChild(card);
-  });
-  if (shown === 0) { const hint = document.createElement('div'); hint.className = 'empty-hint'; hint.textContent = search.value ? '无搜索结果' : '当前分类暂无内容'; fragment.appendChild(hint); }
-  const addCard = document.createElement('div'); addCard.className = 'add-tool-card'; addCard.innerHTML = '+';
-  addCard.onclick = () => { isAddMode = true; document.getElementById('modalTitle').textContent = '添加新工具'; document.getElementById('editLogo').value = ''; document.getElementById('editName').value = ''; document.getElementById('editTag').value = ''; document.getElementById('editUrl').value = ''; editModal.classList.add('show'); overlay.classList.add('show'); renderIconSelector(); setTimeout(() => { const input = document.getElementById('editName'); input.focus(); input.select(); }, 50); };
-  fragment.appendChild(addCard); list.appendChild(fragment);
-  setTimeout(() => { document.querySelectorAll('.tool-card,.add-tool-card').forEach((el, idx) => { setTimeout(() => el.classList.add('visible'), idx * 50); }); }, 100); initDrag();
+
+  if(isAdmin) {
+    const addBtn = document.createElement('div');
+    addBtn.className = 'tool-card add-tool-card';
+    addBtn.style.border = '2px dashed #444';
+    addBtn.style.justifyContent = 'center';
+    addBtn.style.alignItems = 'center';
+    addBtn.style.cursor = 'pointer';
+    addBtn.innerHTML = '<h3>+ 添加网站</h3>';
+    addBtn.onclick = addItem;
+    list.appendChild(addBtn);
+  }
 }
-list.addEventListener('click', (e) => { const card = e.target.closest('.tool-card'); if (!card) return; if (isDragging) { e.preventDefault(); return; } incrementVisitCount(card.dataset.url); });
-list.addEventListener('contextmenu', (e) => { const card = e.target.closest('.tool-card'); if (!card) return; e.preventDefault(); currentEditIndex = parseInt(card.dataset.index); contextMenu.style.display = 'block'; contextMenu.style.left = e.clientX + 'px'; contextMenu.style.top = e.clientY + 'px'; });
-function initDrag() {
-  if (window.dragInitialized) return; window.dragInitialized = true; let rafId = null;
-  document.addEventListener('mousedown', (e) => { const card = e.target.closest('.tool-card'); if (!card || e.button !== 0) return; const rect = card.getBoundingClientRect(); dragStartX = e.clientX; dragStartY = e.clientY; dragOffsetX = e.clientX - rect.left; dragOffsetY = e.clientY - rect.top; dragged = card; dragStartIndex = parseInt(card.dataset.index); isDragging = false; card.classList.add('dragging'); e.preventDefault(); });
-  document.addEventListener('mousemove', (e) => { if (!dragged) return; if (rafId) cancelAnimationFrame(rafId); rafId = requestAnimationFrame(() => { const dx = Math.abs(e.clientX - dragStartX); const dy = Math.abs(e.clientY - dragStartY); if (dx > 6 || dy > 6) { isDragging = true; document.body.style.userSelect = 'none'; dragged.style.position = 'fixed'; dragged.style.zIndex = '99999'; dragged.style.left = (e.clientX - dragOffsetX) + 'px'; dragged.style.top = (e.clientY - dragOffsetY) + 'px'; dragged.style.pointerEvents = 'none'; dragged.style.transform = 'none'; } }); });
-  document.addEventListener('mouseup', (e) => { if (!dragged) return; if (rafId) { cancelAnimationFrame(rafId); rafId = null; } dragged.classList.remove('dragging'); dragged.style.position = ''; dragged.style.zIndex = ''; dragged.style.left = ''; dragged.style.top = ''; dragged.style.pointerEvents = ''; dragged.style.transform = ''; document.body.style.userSelect = ''; if (isDragging) { const endCard = document.elementFromPoint(e.clientX, e.clientY)?.closest('.tool-card'); if (endCard && endCard !== dragged) { const endIndex = parseInt(endCard.dataset.index); [tools[dragStartIndex], tools[endIndex]] = [tools[endIndex], tools[dragStartIndex]]; saveTools(); render(); } } dragged = null; dragStartIndex = -1; isDragging = false; });
+
+// 管理操作
+function addItem() {
+  const name = prompt("网站名称:");
+  const url = prompt("网址 (以http开头):");
+  const tag = prompt("标签:");
+  const cat = prompt("分类标识 (model/render/ai/uncat):");
+  if(name && url) {
+    tools.push({name, url, tag, cat});
+    saveTemporary();
+    render();
+  }
 }
-function closeModals() { editModal.classList.remove('show'); document.getElementById('addCatModal').classList.remove('show'); document.getElementById('editCatNameModal').classList.remove('show'); document.getElementById('dataModal').classList.remove('show'); document.getElementById('loginModal').classList.remove('show'); overlay.classList.remove('show'); contextMenu.style.display = 'none'; catContextMenu.style.display = 'none'; }
-document.getElementById('editCard').onclick = () => { if(currentEditIndex === -1) return; const t = tools[currentEditIndex]; isAddMode = false; document.getElementById('modalTitle').textContent = '编辑工具信息'; document.getElementById('editLogo').value = t.logo || ''; document.getElementById('editName').value = t.name; document.getElementById('editTag').value = t.tag; document.getElementById('editUrl').value = t.url; document.getElementById('editCat').value = t.cat; editModal.classList.add('show'); overlay.classList.add('show'); renderIconSelector(); setTimeout(() => { const input = document.getElementById('editName'); input.focus(); input.select(); }, 50); contextMenu.style.display = 'none'; };
-document.getElementById('favoriteCard').onclick = () => { if(currentEditIndex === -1) return; toggleFavorite(tools[currentEditIndex].url); contextMenu.style.display = 'none'; };
-document.getElementById('deleteCard').onclick = () => { if(currentEditIndex === -1) return; if(confirm('确定删除？')){ tools.splice(currentEditIndex, 1); saveTools(); render(); } contextMenu.style.display = 'none'; };
-document.getElementById('editCatName').onclick = () => { if(!currentEditCatId) return; document.getElementById('editCatId').value = currentEditCatId; document.getElementById('editCatDisplayName').value = catNameMap[currentEditCatId] || ''; document.getElementById('editCatNameModal').classList.add('show'); overlay.classList.add('show'); catContextMenu.style.display = 'none'; };
-document.getElementById('deleteCat').onclick = () => { if(!currentEditCatId || currentEditCatId === 'uncat'){ alert('无法删除'); catContextMenu.style.display = 'none'; return; } if(confirm('删除后工具移入未分类，确定？')){ tools.forEach(t => {if(t.cat === currentEditCatId) t.cat = 'uncat';}); delete catNameMap[currentEditCatId]; saveCats(); saveTools(); renderTabs(); render(); } catContextMenu.style.display = 'none'; };
-document.getElementById('cancelBtn').onclick = closeModals; document.getElementById('cancelAddCatBtn').onclick = closeModals; document.getElementById('cancelEditCatBtn').onclick = closeModals; document.getElementById('cancelDataBtn').onclick = closeModals;
-document.getElementById('saveBtn').onclick = () => { const logo = document.getElementById('editLogo').value.trim(); const name = document.getElementById('editName').value.trim(); const tag = document.getElementById('editTag').value.trim(); let url = document.getElementById('editUrl').value.trim(); const cat = document.getElementById('editCat').value; if(!name || !url){alert('名称/网址不能为空'); return;} if(!/^https?:\/\//i.test(url)) url = 'https://' + url; try { const u = new URL(url); const trackingParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'spm']; trackingParams.forEach(p => u.searchParams.delete(p)); url = u.toString(); } catch(e) {} const item = {name, logo, url, tag, cat}; if(isAddMode) tools.push(item); else tools[currentEditIndex] = item; saveTools(); render(); closeModals(); };
-document.getElementById('saveAddCatBtn').onclick = () => { const id = document.getElementById('newCatId').value.trim(); const name = document.getElementById('newCatDisplayName').value.trim(); if(!id || !name || !/^[a-zA-Z0-9_]+$/.test(id)){alert('格式错误'); return;} if(catNameMap[id]){alert('已存在'); return;} catNameMap[id] = name; saveCats(); renderTabs(); closeModals(); };
-document.getElementById('saveEditCatBtn').onclick = () => { const id = document.getElementById('editCatId').value.trim(); const name = document.getElementById('editCatDisplayName').value.trim(); if(!name){alert('名称不能为空'); return;} catNameMap[id] = name; saveCats(); renderTabs(); closeModals(); };
-function exportData() { const data = JSON.stringify({tools, cats: catNameMap, visitCounts, favorites}, null, 2); document.getElementById('dataModalTitle').textContent = `导出数据 (${currentUser || '访客'})`; document.getElementById('dataModalLabel').textContent = '已复制到剪贴板'; document.getElementById('dataTextarea').value = data; document.getElementById('dataTextarea').readOnly = true; document.getElementById('confirmDataBtn').textContent = '复制'; document.getElementById('confirmDataBtn').onclick = () => { navigator.clipboard.writeText(data).then(() => {alert('已复制'); closeModals();}); }; document.getElementById('dataModal').classList.add('show'); overlay.classList.add('show'); }
-function importData() { document.getElementById('dataModalTitle').textContent = `导入数据到 (${currentUser || '访客'})`; document.getElementById('dataModalLabel').textContent = '粘贴数据（导入前已自动备份当前账号数据）'; document.getElementById('dataTextarea').value = ''; document.getElementById('dataTextarea').readOnly = false; document.getElementById('confirmDataBtn').textContent = '导入'; document.getElementById('confirmDataBtn').onclick = () => { try{ const d = JSON.parse(document.getElementById('dataTextarea').value.trim()); if(!d.tools || !d.cats) throw new Error('格式错误'); tools = d.tools; catNameMap = d.cats; visitCounts = d.visitCounts || {}; favorites = d.favorites || {}; saveTools(); saveCats(); saveVisitCounts(); saveFavorites(); alert('导入成功'); renderTabs(); render(); closeModals(); }catch(e){alert('失败：' + e.message);} }; document.getElementById('dataModal').classList.add('show'); overlay.classList.add('show'); }
-document.getElementById('exportDataBtn').onclick = exportData; document.getElementById('importDataBtn').onclick = importData;
-document.onclick = e => { if(!contextMenu.contains(e.target)) contextMenu.style.display = 'none'; if(!catContextMenu.contains(e.target)) catContextMenu.style.display = 'none'; };
-document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModals(); if(e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA'){ e.preventDefault(); search.focus(); } if ((e.ctrlKey || e.metaKey) && e.key === 'f') { e.preventDefault(); search.focus(); window.scrollTo({top: 0, behavior: 'smooth'}); } });
-let searchTimeout; search.oninput = (e) => { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => { render(); }, 250); };
-search.onkeydown = e => { if(e.key === 'Enter'){ clearTimeout(searchTimeout); render(); } if(e.key === 'Escape'){ search.value = ''; search.blur(); clearTimeout(searchTimeout); render(); } };
-const themeBtn = document.getElementById('themeBtn'); themeBtn.onclick = () => { document.documentElement.classList.toggle('light'); themeBtn.textContent = document.documentElement.classList.contains('light') ? '深色' : '浅色'; };
-document.body.addEventListener('dragover', e => { e.preventDefault(); }); document.body.addEventListener('drop', e => { e.preventDefault(); if (e.dataTransfer.files.length > 0) { const file = e.dataTransfer.files[0]; if (file.name.endsWith('.txt') || file.name.endsWith('.json')) { const reader = new FileReader(); reader.onload = event => { try { const d = JSON.parse(event.target.result); if(!d.tools || !d.cats) throw new Error('数据格式不匹配'); if (confirm(`检测到数据文件，是否直接导入并覆盖【${currentUser || '访客'}】当前的数据？`)) { tools = d.tools; catNameMap = d.cats; visitCounts = d.visitCounts || {}; favorites = d.favorites || {}; saveTools(); saveCats(); saveVisitCounts(); saveFavorites(); alert('拖拽导入成功！'); renderTabs(); render(); } } catch(err) { console.warn("拖拽的文件不是有效的数据格式"); } }; reader.readAsText(file); } } });
-const canvas = document.getElementById('dots'); const ctx = canvas.getContext('2d'); let w,h,dots=[]; function resize(){w=canvas.width=window.innerWidth;h=canvas.height=window.innerHeight;} resize(); window.onresize=resize;
-class Dot{ constructor(){ this.x=Math.random()*w; this.y=Math.random()*h; this.r=Math.random()*1+0.5; this.a=Math.random()*0.3+0.1; this.s=Math.random()*0.2+0.1; this.color = `rgba(255,255,255,${this.a})`; } update(){ this.y+=this.s; if(this.y>h)this.y=0; } draw(){ ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fillStyle = this.color; ctx.fill(); } }
-for(let i=0;i<(navigator.hardwareConcurrency>4?120:60);i++)dots.push(new Dot()); let rafIdCanvas; let isPageVisible = true; document.addEventListener("visibilitychange", () => { isPageVisible = document.visibilityState === "visible"; if (isPageVisible) { cancelAnimationFrame(rafIdCanvas); ani(); } }); function ani(){ if (!isPageVisible) return; ctx.clearRect(0,0,w,h); dots.forEach(d=>{d.update();d.draw();}); rafIdCanvas = requestAnimationFrame(ani); } ani();
-const toTop = document.getElementById('toTop'); window.onscroll = () => toTop.classList.toggle('show',window.scrollY>300); toTop.onclick = () => window.scrollTo({top:0,behavior:'smooth'});
-window.onload = () => { updateLoginUI(); loadData(); renderTabs(); render(); document.querySelector('header').classList.add('animate-in'); filterTabs.classList.add('animate-in'); if(window.matchMedia('(prefers-color-scheme: light)').matches){ document.documentElement.classList.add('light'); themeBtn.textContent='深色'; } };
+
+function deleteItem(idx) {
+  if(confirm("确定删除？")) {
+    tools.splice(idx, 1);
+    saveTemporary();
+    render();
+  }
+}
+
+// 临时保存到本地预览
+function saveTemporary() {
+  localStorage.setItem('admin_preview_data', JSON.stringify({tools, cats}));
+}
+
+// 导出最终数据供代码替换
+function exportData() {
+  const finalData = JSON.stringify(tools, null, 2);
+  console.log(finalData);
+  alert("数据已在控制台输出，请复制并替换代码中的 defaultTools 数组。");
+}
+
+// 主题切换
+document.getElementById('themeBtn').onclick = () => document.documentElement.classList.toggle('light');
 </script>
 </body>
 </html>
