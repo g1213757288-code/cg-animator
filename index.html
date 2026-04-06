@@ -300,15 +300,14 @@ header p { font-size: 16px; color: var(--text-secondary); max-width: 700px; marg
 // 核心数据存放区（现在为空，请稍后直接拖拽你的备份文件进来即可自动填充）
 // ==========================================
 const DEFAULT_DATA = {
-  "cats": {
+"cats": {
     "ai": "AI生成",
     "uncat": "未分类",
     "Practical": "实用",
     "design": "设计",
     "Tool": "工具",
     "Community": "社区",
-    "Game": "游戏",
-    "private": "🔒 未启用"
+    "Game": "游戏"
   },
   "tools": [
     {
@@ -663,32 +662,28 @@ const DEFAULT_DATA = {
       "logo": "https://img.cg3da.com/wp-content/uploads/2022/08/logo.png",
       "url": "https://www.cg3da.com/",
       "tag": "会员免费CG资产",
-      "cat": "design",
-      "hidden": true
+      "cat": "design"
     },
     {
       "name": "CG资源仓库",
       "logo": "https://www.zycku.com/wp-content/uploads/2021/04/favicon.ico",
       "url": "https://www.zycku.com/",
       "tag": "专注CG资源",
-      "cat": "design",
-      "hidden": true
+      "cat": "design"
     },
     {
       "name": "可动程序",
       "logo": "https://cgexe.com/wp-content/uploads/2022/05/favicon.png",
       "url": "https://cgexe.com/",
       "tag": "付费分享CG资讯",
-      "cat": "design",
-      "hidden": true
+      "cat": "design"
     },
     {
       "name": "CGTall",
       "logo": "https://www.cgtall.com/favicon.ico",
       "url": "https://www.cgtall.com/",
       "tag": "CG教程资源平台",
-      "cat": "design",
-      "hidden": true
+      "cat": "design"
     },
     {
       "name": "UV Checker",
@@ -723,8 +718,7 @@ const DEFAULT_DATA = {
       "logo": "https://jx3.xoyo.com/favicon.ico",
       "url": "https://jx3.xoyo.com/",
       "tag": "《剑网三》官网",
-      "cat": "Game",
-      "hidden": true
+      "cat": "Game"
     },
     {
       "name": "Civital",
@@ -760,8 +754,7 @@ const DEFAULT_DATA = {
       "logo": "https://jiemahao.com/wp-content/uploads/2023/07/favicon.ico",
       "url": "https://jiemahao.com/",
       "tag": "虚拟号码",
-      "cat": "Practical",
-      "hidden": true
+      "cat": "Practical"
     },
     {
       "name": "Google专用邮箱",
@@ -775,8 +768,7 @@ const DEFAULT_DATA = {
       "logo": "https://www.seasunwbl.com/favicon.ico",
       "url": "https://www.seasunwbl.com/",
       "tag": "西山居官方交易平台",
-      "cat": "Game",
-      "hidden": true
+      "cat": "Game"
     },
     {
       "name": "Vercel",
@@ -793,31 +785,6 @@ const DEFAULT_DATA = {
       "cat": "Community"
     }
   ]
-}
-
-// ⭐ 这里的 UI 刷新逻辑也加上了红色高亮的退出按钮样式
-function updateLoginUI() {
-  const disp = document.getElementById('currentUserDisp');
-  const icon = document.getElementById('loginIcon');
-  const title = document.getElementById('headerTitle');
-  const adminElems = document.querySelectorAll('.admin-only');
-  const loginBtn = document.getElementById('loginBtn');
-  
-  if (isAdmin) {
-    disp.textContent = "退出管理";
-    if(icon) { icon.classList.remove('fa-lock'); icon.classList.add('fa-unlock'); }
-    loginBtn.classList.add('logged-in'); // 添加退出专用的红色样式
-    title.textContent = `🛠 管理员模式 (修改后记得导出哦)`;
-    document.getElementById('headerTitle').style.color = 'var(--accent)';
-    adminElems.forEach(el => el.style.display = 'flex');
-  } else {
-    disp.textContent = '管理员入口';
-    if(icon) { icon.classList.remove('fa-unlock'); icon.classList.add('fa-lock'); }
-    loginBtn.classList.remove('logged-in'); // 恢复正常颜色
-    title.textContent = 'Personal Navigation Site';
-    document.getElementById('headerTitle').style.color = 'var(--text)';
-    adminElems.forEach(el => el.style.display = 'none');
-  }
 }
 
 function secretHash(str) {
