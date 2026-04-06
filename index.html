@@ -106,6 +106,7 @@ header p { font-size: 16px; color: var(--text-secondary); max-width: 700px; marg
 @media (max-width:1200px){.tool-list{grid-template-columns:repeat(3,1fr);}}
 @media (max-width:768px){ .tool-list{grid-template-columns:repeat(2,1fr);} .nav-search { position: relative; left: 0; transform: none; max-width: none; margin: 0 12px; } .nav-container { flex-wrap: wrap; gap: 12px; } .nav-actions { order: 3; width: 100%; justify-content: flex-end; } }
 @media (max-width:480px){.tool-list{grid-template-columns:1fr;}}
+.tool-card.is-hidden { opacity: 0.4; filter: grayscale(0.8); border: 1px dashed #666; }
 </style>
 </head>
 <body>
@@ -141,6 +142,7 @@ header p { font-size: 16px; color: var(--text-secondary); max-width: 700px; marg
 <div class="custom-context-menu" id="contextMenu">
   <div class="context-item" id="editCard"><i class="fa-solid fa-pen"></i> 编辑卡片</div>
   <div class="context-item" id="favoriteCard"><i class="fa-solid fa-star"></i> 收藏/取消收藏</div>
+  <div class="context-menu-item" id="toggleHideCard"><i class="fa-solid fa-eye-slash"></i> <span id="toggleHideText">隐藏卡片</span></div>
   <div class="context-item" style="color:#ff4444;" id="deleteCard"><i class="fa-solid fa-trash"></i> 删除卡片</div>
 </div>
 <div class="cat-context-menu" id="catContextMenu">
@@ -804,25 +806,19 @@ function saveCats() { if(isAdmin) safeLocalStorageSet('admin_cats', JSON.stringi
 function saveVisitCounts() { safeLocalStorageSet('visitCounts', JSON.stringify(visitCounts)); }
 function saveFavorites() { safeLocalStorageSet('favorites', JSON.stringify(favorites)); }
 
-// ==========================================
-// 核心更新 1：每个人只读取自己本地的点击次数，互不干扰
-// ==========================================
 function loadData() {
   const savedVisits = localStorage.getItem('visitCounts'); 
   const savedFavs = localStorage.getItem('favorites');
   
-  // 每个人（包括你）都只读取自己浏览器里独立的点击次数和收藏夹
   visitCounts = savedVisits ? JSON.parse(savedVisits) : {};
   favorites = savedFavs ? JSON.parse(savedFavs) : {};
 
   if (isAdmin) {
-    // 管理员：读取本地正在编辑的草稿，如果没有草稿再读 GitHub 上的默认数据
     const savedTools = localStorage.getItem('admin_tools'); 
     const savedCats = localStorage.getItem('admin_cats');
     tools = savedTools ? JSON.parse(savedTools) : JSON.parse(JSON.stringify(DEFAULT_DATA.tools));
     catNameMap = savedCats ? JSON.parse(savedCats) : JSON.parse(JSON.stringify(DEFAULT_DATA.cats));
   } else {
-    // 普通访客：直接读取你在 GitHub 上更新的最新卡片数据
     tools = JSON.parse(JSON.stringify(DEFAULT_DATA.tools));
     catNameMap = JSON.parse(JSON.stringify(DEFAULT_DATA.cats));
   }
@@ -938,17 +934,32 @@ function render() {
     if (aCount !== bCount) return bCount - aCount; return a.originalIndex - b.originalIndex; 
   });
   const kw = search.value.toLowerCase().trim(); const searchTerms = kw ? kw.split(/\s+/).filter(Boolean) : [];
+  
   sortedTools.forEach((t) => {
-    const i = t.originalIndex; if (currentCat !== 'all' && t.cat !== currentCat) return;
+    const i = t.originalIndex; 
+    if (currentCat !== 'all' && t.cat !== currentCat) return;
+    
+    // ======== 隐藏功能核心逻辑 ========
+    // 1. 如果卡片被设为隐藏，且当前不是管理员，则直接跳过，访客无法看到
+    if (t.hidden && !isAdmin) return; 
+
     if (searchTerms.length > 0) { const targetText = (t.name + ' ' + t.tag).toLowerCase(); if (!searchTerms.every(term => targetText.includes(term))) return; }
-    shown++; const card = document.createElement('a'); card.className = 'tool-card'; card.href = t.url; card.target = '_blank'; card.rel = 'noopener noreferrer'; card.dataset.index = i; card.dataset.url = t.url;
+    shown++; 
+    const card = document.createElement('a'); 
+    card.className = 'tool-card'; 
+    card.href = t.url; card.target = '_blank'; card.rel = 'noopener noreferrer'; card.dataset.index = i; card.dataset.url = t.url;
     if(isAdmin) card.classList.add('draggable');
+    
+    // 2. 如果卡片被设为隐藏，且当前是管理员，给卡片加上半透明样式以便区分
+    if (t.hidden && isAdmin) card.classList.add('is-hidden');
+
     if (favorites[t.url]) { const star = document.createElement('div'); star.className = 'favorite-star'; const starIcon = document.createElement('i'); starIcon.className = 'fa-solid fa-star'; star.appendChild(starIcon); card.appendChild(star); }
     const logo = createLogoElement(t.logo || getWebsiteFavicon(t.url)); const hdr = document.createElement('div'); hdr.className = 'tool-header'; hdr.appendChild(logo);
     const name = document.createElement('div'); name.className = 'tool-name'; name.textContent = t.name; name.title = t.name; hdr.appendChild(name);
     const row = document.createElement('div'); row.className = 'tag-row'; const tag = document.createElement('div'); tag.className = 'tool-tag'; tag.textContent = t.tag; const cnt = document.createElement('div'); cnt.className = 'visit-count'; cnt.textContent = `访问 ${visitCounts[t.url]||0} 次`;
     row.appendChild(tag); row.appendChild(cnt); card.appendChild(hdr); card.appendChild(row); fragment.appendChild(card);
   });
+  
   if (shown === 0) { const hint = document.createElement('div'); hint.className = 'empty-hint'; hint.textContent = search.value ? '无搜索结果' : '当前分类暂无内容'; fragment.appendChild(hint); }
   
   const addCard = document.createElement('div'); addCard.className = 'add-tool-card'; addCard.innerHTML = '+';
@@ -961,9 +972,21 @@ function render() {
 }
 
 list.addEventListener('click', (e) => { const card = e.target.closest('.tool-card'); if (!card) return; if (isDragging) { e.preventDefault(); return; } incrementVisitCount(card.dataset.url); });
+
+// 右键菜单事件
 list.addEventListener('contextmenu', (e) => { 
   if (!isAdmin) return;
-  const card = e.target.closest('.tool-card'); if (!card) return; e.preventDefault(); currentEditIndex = parseInt(card.dataset.index); contextMenu.style.display = 'block'; contextMenu.style.left = e.clientX + 'px'; contextMenu.style.top = e.clientY + 'px'; 
+  const card = e.target.closest('.tool-card'); if (!card) return; e.preventDefault(); 
+  currentEditIndex = parseInt(card.dataset.index); 
+  
+  // 更新隐藏按钮的文字
+  const t = tools[currentEditIndex];
+  const toggleHideBtn = document.getElementById('toggleHideText');
+  if (toggleHideBtn) {
+    toggleHideBtn.textContent = t.hidden ? '取消隐藏' : '隐藏卡片';
+  }
+
+  contextMenu.style.display = 'block'; contextMenu.style.left = e.clientX + 'px'; contextMenu.style.top = e.clientY + 'px'; 
 });
 
 function initDrag() {
@@ -976,17 +999,27 @@ function initDrag() {
 function closeModals() { editModal.classList.remove('show'); document.getElementById('addCatModal').classList.remove('show'); document.getElementById('editCatNameModal').classList.remove('show'); document.getElementById('dataModal').classList.remove('show'); document.getElementById('loginModal').classList.remove('show'); overlay.classList.remove('show'); contextMenu.style.display = 'none'; catContextMenu.style.display = 'none'; }
 document.getElementById('editCard').onclick = () => { if(currentEditIndex === -1) return; const t = tools[currentEditIndex]; isAddMode = false; document.getElementById('modalTitle').textContent = '编辑工具信息'; document.getElementById('editLogo').value = t.logo || ''; document.getElementById('editName').value = t.name; document.getElementById('editTag').value = t.tag; document.getElementById('editUrl').value = t.url; document.getElementById('editCat').value = t.cat; editModal.classList.add('show'); overlay.classList.add('show'); renderIconSelector(); setTimeout(() => { const input = document.getElementById('editName'); input.focus(); input.select(); }, 50); contextMenu.style.display = 'none'; };
 document.getElementById('favoriteCard').onclick = () => { if(currentEditIndex === -1) return; toggleFavorite(tools[currentEditIndex].url); contextMenu.style.display = 'none'; };
+
+// 隐藏/取消隐藏 按钮逻辑
+const toggleHideBtnEl = document.getElementById('toggleHideCard');
+if (toggleHideBtnEl) {
+  toggleHideBtnEl.onclick = () => { 
+    if(currentEditIndex === -1) return; 
+    tools[currentEditIndex].hidden = !tools[currentEditIndex].hidden; 
+    saveTools(); 
+    render(); 
+    contextMenu.style.display = 'none'; 
+  };
+}
+
 document.getElementById('deleteCard').onclick = () => { if(currentEditIndex === -1) return; if(confirm('确定删除？')){ tools.splice(currentEditIndex, 1); saveTools(); render(); } contextMenu.style.display = 'none'; };
 document.getElementById('editCatName').onclick = () => { if(!currentEditCatId) return; document.getElementById('editCatId').value = currentEditCatId; document.getElementById('editCatDisplayName').value = catNameMap[currentEditCatId] || ''; document.getElementById('editCatNameModal').classList.add('show'); overlay.classList.add('show'); catContextMenu.style.display = 'none'; };
 document.getElementById('deleteCat').onclick = () => { if(!currentEditCatId || currentEditCatId === 'uncat'){ alert('无法删除'); catContextMenu.style.display = 'none'; return; } if(confirm('删除后工具移入未分类，确定？')){ tools.forEach(t => {if(t.cat === currentEditCatId) t.cat = 'uncat';}); delete catNameMap[currentEditCatId]; saveCats(); saveTools(); renderTabs(); render(); } catContextMenu.style.display = 'none'; };
 document.getElementById('cancelBtn').onclick = closeModals; document.getElementById('cancelAddCatBtn').onclick = closeModals; document.getElementById('cancelEditCatBtn').onclick = closeModals; document.getElementById('cancelDataBtn').onclick = closeModals;
-document.getElementById('saveBtn').onclick = () => { const logo = document.getElementById('editLogo').value.trim(); const name = document.getElementById('editName').value.trim(); const tag = document.getElementById('editTag').value.trim(); let url = document.getElementById('editUrl').value.trim(); const cat = document.getElementById('editCat').value; if(!name || !url){alert('名称/网址不能为空'); return;} if(!/^https?:\/\//i.test(url)) url = 'https://' + url; try { const u = new URL(url); const trackingParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'spm']; trackingParams.forEach(p => u.searchParams.delete(p)); url = u.toString(); } catch(e) {} const item = {name, logo, url, tag, cat}; if(isAddMode) tools.push(item); else tools[currentEditIndex] = item; saveTools(); render(); closeModals(); };
+document.getElementById('saveBtn').onclick = () => { const logo = document.getElementById('editLogo').value.trim(); const name = document.getElementById('editName').value.trim(); const tag = document.getElementById('editTag').value.trim(); let url = document.getElementById('editUrl').value.trim(); const cat = document.getElementById('editCat').value; if(!name || !url){alert('名称/网址不能为空'); return;} if(!/^https?:\/\//i.test(url)) url = 'https://' + url; try { const u = new URL(url); const trackingParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'spm']; trackingParams.forEach(p => u.searchParams.delete(p)); url = u.toString(); } catch(e) {} const item = {name, logo, url, tag, cat}; if(!isAddMode && tools[currentEditIndex].hidden) item.hidden = true; /* 保持隐藏状态 */ if(isAddMode) tools.push(item); else tools[currentEditIndex] = item; saveTools(); render(); closeModals(); };
 document.getElementById('saveAddCatBtn').onclick = () => { const id = document.getElementById('newCatId').value.trim(); const name = document.getElementById('newCatDisplayName').value.trim(); if(!id || !name || !/^[a-zA-Z0-9_]+$/.test(id)){alert('格式错误'); return;} if(catNameMap[id]){alert('已存在'); return;} catNameMap[id] = name; saveCats(); renderTabs(); closeModals(); };
 document.getElementById('saveEditCatBtn').onclick = () => { const id = document.getElementById('editCatId').value.trim(); const name = document.getElementById('editCatDisplayName').value.trim(); if(!name){alert('名称不能为空'); return;} catNameMap[id] = name; saveCats(); renderTabs(); closeModals(); };
 
-// ==========================================
-// 核心更新 2：只导出网站分类和数据，防止污染别人的访问次数
-// ==========================================
 function exportData() { 
   const dataObj = { cats: catNameMap, tools: tools };
   const dataStr = JSON.stringify(dataObj, null, 2); 
