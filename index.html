@@ -6,236 +6,257 @@
 <title>CG Animator | 网站收录</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-/* 保持原有样式不变 */
+/* 保持原有样式 */
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease; }
 html { scroll-behavior: smooth; overflow-y: scroll; }
 :root { --bg: #000000; --card: #12121288; --card-border: #1e1e1e; --text: #ffffff; --text-secondary: #b0b0b0; --tag-bg: #1a1a1a; --tag-text: #d0d0d0; --accent: #00a6ff; --grid-line: rgba(255,255,255,0.1); --nav-bg: #0a0a0acc; --input-bg: #161616; --input-border: #222; }
 html.light { --bg: #f8f9fc; --card: #ffffffaa; --card-border: #e2e8f0; --text: #111111; --text-secondary: #64748b; --tag-bg: #f1f5f9; --tag-text: #475569; --accent: #0071e3; --grid-line: rgba(0,0,0,0.1); --nav-bg: #ffffffcc; --input-bg: #ffffff; --input-border: #e2e8f0; }
-body { background: var(--bg); color: var(--text); min-height: 100vh; position: relative; overflow-x: hidden; user-select: none; width: 100%; }
+body { background: var(--bg); color: var(--text); min-height: 100vh; position: relative; overflow-x: hidden; user-select: none; }
 body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px); background-size: 80px 80px; z-index: -2; pointer-events: none; }
 #dots { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+
 .nav { position: sticky; top: 0; background: var(--nav-bg); backdrop-filter: blur(20px); border-bottom: 1px solid var(--card-border); padding: 16px 0; z-index: 999; }
 .nav-container { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; padding: 0 24px; justify-content: space-between; }
 .nav-logo { font-size: 20px; font-weight: 700; color: var(--text); cursor: pointer; }
-.nav-actions { display: flex; gap: 12px; align-items: center; }
-.nav-search { position: absolute; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; }
+.nav-search { position: absolute; left: 50%; transform: translateX(-50%); width: 100%; max-width: 400px; }
 .nav-search input { width: 100%; padding: 10px 16px; border-radius: 12px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text); outline: none; }
-.filter-tabs { display: flex; gap: 10px; margin: 0 auto 30px; max-width: 100%; overflow-x: auto; justify-content: center; padding: 10px; }
-.filter-tab { padding:6px 14px; border-radius:30px; background:var(--tag-bg); color:var(--text-secondary); font-size:13px; cursor:pointer; white-space: nowrap; }
-.filter-tab.active { background:var(--accent); color:#fff; }
-.tool-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 24px; width: 100%; }
-.tool-card { position:relative; background: var(--card); backdrop-filter: blur(12px); border-radius: 16px; padding: 16px; border: 1px solid var(--card-border); text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 12px; }
-.tool-card:hover { border-color: var(--accent); }
-.tool-header { display: flex; align-items: center; gap: 12px; }
-.tool-logo-container { width: 40px; height: 40px; border-radius: 10px; background: var(--tag-bg); display: flex; align-items: center; justify-content: center; font-size: 20px; }
-.tool-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.tag-row { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
-.tool-tag { font-size: 12px; background: var(--tag-bg); padding: 4px 8px; border-radius: 6px; }
+.nav-actions { display: flex; gap: 12px; }
 
-/* 核心修改：管理相关元素默认隐藏 */
-#adminControls, .add-tool-card, #loginBtn { display: none !important; }
-body.admin-mode #adminControls, body.admin-mode .add-tool-card { display: flex !important; }
+.filter-tabs { display: flex; gap: 10px; margin: 0 auto 30px; max-width: 1400px; overflow-x: auto; justify-content: center; padding: 10px 24px; }
+.filter-tab { padding: 6px 14px; border-radius: 30px; background: var(--tag-bg); color: var(--text-secondary); font-size: 13px; cursor: pointer; white-space: nowrap; border: 1px solid transparent; }
+.filter-tab.active { background: var(--accent); color: #fff; }
+.filter-tab:hover:not(.active) { border-color: var(--accent); }
 
-/* 模态框基础样式 */
-.modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card); backdrop-filter: blur(20px); border: 1px solid var(--card-border); border-radius: 16px; padding: 24px; width: 90%; max-width: 400px; z-index: 1000; display: none; }
-.modal.show { display: block; }
-.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 999; display: none; }
-.overlay.show { display: block; }
-.form-group { margin-bottom: 15px; display: flex; flex-direction: column; gap: 5px; }
-.form-group input, .form-group select { padding: 8px; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text); }
-.btn-save { background: var(--accent); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; }
+.tool-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; max-width: 1400px; margin: 0 auto; padding: 0 24px 100px; }
+.tool-card { position: relative; background: var(--card); backdrop-filter: blur(12px); border-radius: 16px; padding: 20px; border: 1px solid var(--card-border); transition: 0.3s; cursor: pointer; overflow: hidden; }
+.tool-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+.tool-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.tool-logo-container { width: 44px; height: 44px; border-radius: 10px; background: var(--tag-bg); display: flex; align-items: center; justify-content: center; font-size: 22px; }
+.tool-name { font-weight: 600; font-size: 16px; }
+.tool-tag { font-size: 12px; color: var(--tag-text); background: var(--tag-bg); padding: 4px 10px; border-radius: 6px; align-self: flex-start; }
+
+/* 拖拽样式 */
+.tool-card.dragging { opacity: 0.5; border: 2px dashed var(--accent); }
+
+#toTop { position: fixed; bottom: 30px; right: 30px; width: 44px; height: 44px; background: var(--accent); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transform: translateY(20px); transition: 0.3s; z-index: 99; }
+#toTop.show { opacity: 1; transform: translateY(0); }
+
+/* 管理员模式按钮展示控制 */
+.admin-only { display: none !important; }
+body.admin-mode .admin-only { display: flex !important; }
 </style>
 </head>
 <body>
 
 <canvas id="dots"></canvas>
+
 <div class="nav">
   <div class="nav-container">
     <div class="nav-logo" id="logoTitle">CG Animator</div>
-    <div class="nav-search"><input type="text" id="search" placeholder="搜索实用网站..."></div>
+    <div class="nav-search"><input type="text" id="searchInput" placeholder="搜索实用工具..."></div>
     <div class="nav-actions">
-      <div id="adminControls">
-        <button onclick="exportData()" class="filter-tab">导出代码</button>
-        <button onclick="importData()" class="filter-tab">导入数据</button>
-      </div>
-      <div class="filter-tab" id="themeBtn">切换主题</div>
-      <button id="loginBtn"></button>
+      <button class="filter-tab admin-only" onclick="exportData()" title="保存修改并同步到代码">同步数据</button>
+      <div class="filter-tab" id="themeBtn"><i class="fa-solid fa-moon"></i></div>
     </div>
   </div>
 </div>
 
-<div class="container" style="max-width:1400px; margin: 0 auto; padding: 40px 24px;">
-  <header style="text-align:center; margin-bottom:40px;">
-    <h1>专注实用网站收录</h1>
-    <p style="color:var(--text-secondary)">本站内容由管理员维护，双击Logo登录</p>
-  </header>
-  <div class="filter-tabs" id="filterTabs"></div>
-  <div class="tool-list" id="toolList"></div>
+<div style="padding-top: 60px; text-align: center; margin-bottom: 40px;">
+    <h1 style="font-size: 2.5rem; margin-bottom: 10px;">实用网站收录</h1>
+    <p style="color: var(--text-secondary);">专注于视觉设计与动画制作工具</p>
 </div>
 
-<div class="overlay" id="overlay"></div>
-<div class="modal" id="loginModal">
-  <h3>管理员验证</h3><br>
-  <div class="form-group">
-    <label>账号</label>
-    <input type="text" id="adminUser">
-  </div>
-  <div class="form-group">
-    <label>密码</label>
-    <input type="password" id="adminPass">
-  </div>
-  <button class="btn-save" style="width:100%" onclick="checkLogin()">进入管理模式</button>
-</div>
+<div class="filter-tabs" id="filterTabs"></div>
+<div class="tool-list" id="toolList"></div>
+
+<div id="toTop"><i class="fa-solid fa-arrow-up"></i></div>
 
 <script>
 // ==========================================
-// 1. 管理员配置 (在此修改你的账号密码)
+// 1. 管理员账户配置（在这里修改密码）
 // ==========================================
 const ADMIN_CONF = {
-  user: "MrChiu",
-  pass: "MrChiu" 
+    user: "admin",      // 登录名
+    pass: "123456"      // 登录密码
 };
 
 // ==========================================
-// 2. 默认网站数据 (所有人可见的数据在此修改)
+// 2. 默认展示的数据（所有人访问时看到的数据）
 // ==========================================
 let defaultTools = [
-  {name:"Tripo AI",logo:"",url:"https://tripo.ai",tag:"全能型3D生成",cat:"ai"},
-  {name:"Hitem3D",logo:"",url:"https://hitem3d.com",tag:"超高清4K纹理",cat:"model"},
-  {name:"Hyper3D",logo:"",url:"https://hyper3d.xyz",tag:"角色建模专用",cat:"model"}
+    {name:"Tripo AI", url:"https://tripo.ai", tag:"全能型3D生成", cat:"ai"},
+    {name:"Hitem3D", url:"https://hitem3d.com", tag:"高清纹理", cat:"model"},
+    {name:"Hyper3D", url:"https://hyper3d.xyz", tag:"角色建模", cat:"model"}
 ];
 
 let defaultCats = { model:'建模', render:'渲染', ai:'AI生成', uncat:'未分类' };
 
 // 状态变量
 let isAdmin = false;
-let tools = [...defaultTools];
+let tools = [];
 let cats = {...defaultCats};
 let currentCat = 'all';
 
-// 初始化
+// 初始化加载
 window.onload = () => {
-  // 尝试从本地加载，以便管理员预览修改效果
-  const saved = localStorage.getItem('admin_preview_data');
-  if(saved) {
-    const d = JSON.parse(saved);
-    tools = d.tools;
-    cats = d.cats;
-  }
-  renderTabs();
-  render();
-};
-
-// 管理员登录逻辑
-document.getElementById('logoTitle').ondblclick = () => {
-  document.getElementById('overlay').classList.add('show');
-  document.getElementById('loginModal').classList.add('show');
-};
-
-function checkLogin() {
-  const u = document.getElementById('adminUser').value;
-  const p = document.getElementById('adminPass').value;
-  if(u === ADMIN_CONF.user && p === ADMIN_CONF.pass) {
-    isAdmin = true;
-    document.body.classList.add('admin-mode');
-    alert("验证成功！现在你可以添加、删除或拖拽卡片。修改完成后请点击'导出代码'更新到GitHub。");
-    closeModals();
+    const saved = localStorage.getItem('my_nav_data');
+    tools = saved ? JSON.parse(saved).tools : [...defaultTools];
+    renderTabs();
     render();
-  } else {
-    alert("鉴权失败");
-  }
-}
+};
 
-function closeModals() {
-  document.querySelectorAll('.modal, .overlay').forEach(el => el.classList.remove('show'));
-}
+// --- 管理员隐形登录 ---
+document.getElementById('logoTitle').ondblclick = () => {
+    const u = prompt("MrChiu:");
+    const p = prompt("MrChiu:");
+    if(u === ADMIN_CONF.user && p === ADMIN_CONF.pass) {
+        isAdmin = true;
+        document.body.classList.add('admin-mode');
+        alert("已进入管理员模式：\n- 直接右键点击卡片可删除\n- 拖拽卡片可排序\n- 点击末尾虚线框添加网站\n- 完成后点击顶部的'同步数据'");
+        render();
+    } else {
+        alert("验证失败");
+    }
+};
 
-// 渲染函数
+// --- 渲染逻辑 ---
 function renderTabs() {
-  let html = `<div class="filter-tab ${currentCat==='all'?'active':''}" onclick="filter('all')">全部</div>`;
-  for(let key in cats) {
-    html += `<div class="filter-tab ${currentCat===key?'active':''}" onclick="filter('${key}')">${cats[key]}</div>`;
-  }
-  document.getElementById('filterTabs').innerHTML = html;
+    let html = `<div class="filter-tab ${currentCat==='all'?'active':''}" onclick="filter('all')">全部</div>`;
+    for(let key in cats) {
+        html += `<div class="filter-tab ${currentCat===key?'active':''}" onclick="filter('${key}')">${cats[key]}</div>`;
+    }
+    document.getElementById('filterTabs').innerHTML = html;
 }
 
 function filter(c) {
-  currentCat = c;
-  renderTabs();
-  render();
+    currentCat = c;
+    renderTabs();
+    render();
 }
 
 function render() {
-  const list = document.getElementById('toolList');
-  list.innerHTML = '';
-  
-  let filtered = tools.filter(t => currentCat === 'all' || t.cat === currentCat);
-  
-  filtered.forEach((t, idx) => {
-    const card = document.createElement('div');
-    card.className = 'tool-card';
-    card.innerHTML = `
-      <div class="tool-header">
-        <div class="tool-logo-container"><i class="fa-solid fa-globe"></i></div>
-        <div class="tool-name">${t.name}</div>
-      </div>
-      <div class="tag-row">
-        <span class="tool-tag">${t.tag}</span>
-        ${isAdmin ? `<button onclick="deleteItem(${idx})" style="color:red;background:none;border:none;cursor:pointer">删除</button>` : ''}
-      </div>
-      <a href="${t.url}" target="_blank" style="position:absolute;inset:0"></a>
-    `;
-    list.appendChild(card);
-  });
+    const list = document.getElementById('toolList');
+    list.innerHTML = '';
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    
+    let filtered = tools.filter(t => {
+        const matchesCat = currentCat === 'all' || t.cat === currentCat;
+        const matchesSearch = t.name.toLowerCase().includes(searchTerm) || t.tag.toLowerCase().includes(searchTerm);
+        return matchesCat && matchesSearch;
+    });
 
-  if(isAdmin) {
-    const addBtn = document.createElement('div');
-    addBtn.className = 'tool-card add-tool-card';
-    addBtn.style.border = '2px dashed #444';
-    addBtn.style.justifyContent = 'center';
-    addBtn.style.alignItems = 'center';
-    addBtn.style.cursor = 'pointer';
-    addBtn.innerHTML = '<h3>+ 添加网站</h3>';
-    addBtn.onclick = addItem;
-    list.appendChild(addBtn);
-  }
+    filtered.forEach((t, idx) => {
+        const card = document.createElement('div');
+        card.className = 'tool-card';
+        card.draggable = isAdmin;
+        card.innerHTML = `
+            <div class="tool-header">
+                <div class="tool-logo-container"><i class="fa-solid fa-globe"></i></div>
+                <div class="tool-name">${t.name}</div>
+            </div>
+            <div class="tool-tag">${t.tag}</div>
+            <a href="${t.url}" target="_blank" style="position:absolute;inset:0;${isAdmin?'pointer-events:none;':''}"></a>
+        `;
+
+        // 管理员操作：右键删除
+        if(isAdmin) {
+            card.oncontextmenu = (e) => {
+                e.preventDefault();
+                if(confirm(`确定删除 ${t.name}？`)) {
+                    tools.splice(tools.indexOf(t), 1);
+                    saveAndRefresh();
+                }
+            };
+            // 拖拽排序逻辑
+            card.ondragstart = (e) => {
+                e.dataTransfer.setData('text/plain', tools.indexOf(t));
+                card.classList.add('dragging');
+            };
+            card.ondragend = () => card.classList.remove('dragging');
+            card.ondragover = (e) => e.preventDefault();
+            card.ondrop = (e) => {
+                e.preventDefault();
+                const fromIdx = e.dataTransfer.getData('text/plain');
+                const toIdx = tools.indexOf(t);
+                const movedItem = tools.splice(fromIdx, 1)[0];
+                tools.splice(toIdx, 0, movedItem);
+                saveAndRefresh();
+            };
+        }
+        list.appendChild(card);
+    });
+
+    // 管理员操作：添加按钮
+    if(isAdmin) {
+        const addBtn = document.createElement('div');
+        addBtn.className = 'tool-card';
+        addBtn.style.border = '2px dashed var(--accent)';
+        addBtn.style.display = 'flex';
+        addBtn.style.justifyContent = 'center';
+        addBtn.style.alignItems = 'center';
+        addBtn.innerHTML = '<h3>+ 添加网站</h3>';
+        addBtn.onclick = () => {
+            const name = prompt("名称:");
+            const url = prompt("地址 (http/https):");
+            const tag = prompt("简短描述:");
+            if(name && url) {
+                tools.push({name, url, tag, cat: currentCat === 'all' ? 'uncat' : currentCat});
+                saveAndRefresh();
+            }
+        };
+        list.appendChild(addBtn);
+    }
 }
 
-// 管理操作
-function addItem() {
-  const name = prompt("网站名称:");
-  const url = prompt("网址 (以http开头):");
-  const tag = prompt("标签:");
-  const cat = prompt("分类标识 (model/render/ai/uncat):");
-  if(name && url) {
-    tools.push({name, url, tag, cat});
-    saveTemporary();
+function saveAndRefresh() {
+    localStorage.setItem('my_nav_data', JSON.stringify({tools, cats}));
     render();
-  }
 }
 
-function deleteItem(idx) {
-  if(confirm("确定删除？")) {
-    tools.splice(idx, 1);
-    saveTemporary();
-    render();
-  }
-}
-
-// 临时保存到本地预览
-function saveTemporary() {
-  localStorage.setItem('admin_preview_data', JSON.stringify({tools, cats}));
-}
-
-// 导出最终数据供代码替换
 function exportData() {
-  const finalData = JSON.stringify(tools, null, 2);
-  console.log(finalData);
-  alert("数据已在控制台输出，请复制并替换代码中的 defaultTools 数组。");
+    const dataStr = JSON.stringify(tools, null, 2);
+    const blob = new Blob([dataStr], {type: "application/json"});
+    const url = URL.createObjectURL(blob);
+    
+    // 同时也复制到剪贴板，方便直接去 GitHub 替换
+    const el = document.createElement('textarea');
+    el.value = dataStr;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+
+    alert("修改已复制到剪贴板！\n\n请前往 GitHub 的 index.html 中，找到 'let defaultTools = [...]'，把里面的内容替换掉。这样全世界访客都能看到你的更新了。");
 }
+
+// 搜索监听
+document.getElementById('searchInput').oninput = render;
 
 // 主题切换
-document.getElementById('themeBtn').onclick = () => document.documentElement.classList.toggle('light');
+document.getElementById('themeBtn').onclick = () => {
+    const isLight = document.documentElement.classList.toggle('light');
+    document.getElementById('themeBtn').innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+};
+
+// 粒子背景逻辑（保持原样）
+const canvas = document.getElementById('dots');
+const ctx = canvas.getContext('2d');
+let w, h, dots = [];
+function resize(){ w=canvas.width=window.innerWidth; h=canvas.height=window.innerHeight; }
+window.onresize = resize; resize();
+class Dot{ 
+    constructor(){ this.x=Math.random()*w; this.y=Math.random()*h; this.r=Math.random()*1+0.5; this.a=Math.random()*0.3+0.1; this.s=Math.random()*0.2+0.1; this.color = `rgba(255,255,255,${this.a})`; } 
+    update(){ this.y+=this.s; if(this.y>h)this.y=0; } 
+    draw(){ ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fillStyle = this.color; ctx.fill(); } 
+}
+for(let i=0;i<80;i++) dots.push(new Dot());
+function ani(){ ctx.clearRect(0,0,w,h); dots.forEach(d=>{d.update();d.draw();}); requestAnimationFrame(ani); }
+ani();
+
+// 回到顶部
+const toTop = document.getElementById('toTop');
+window.onscroll = () => toTop.classList.toggle('show', window.scrollY > 300);
+toTop.onclick = () => window.scrollTo({top: 0, behavior: 'smooth'});
 </script>
 </body>
 </html>
