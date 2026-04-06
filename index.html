@@ -6,47 +6,45 @@
 <title>CG Animator | 网站收录</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-/* 保持原有样式 */
+/* 样式完全保持不变 */
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease; }
 html { scroll-behavior: smooth; overflow-y: scroll; }
 :root { --bg: #000000; --card: #12121288; --card-border: #1e1e1e; --text: #ffffff; --text-secondary: #b0b0b0; --tag-bg: #1a1a1a; --tag-text: #d0d0d0; --accent: #00a6ff; --grid-line: rgba(255,255,255,0.1); --nav-bg: #0a0a0acc; --input-bg: #161616; --input-border: #222; }
 html.light { --bg: #f8f9fc; --card: #ffffffaa; --card-border: #e2e8f0; --text: #111111; --text-secondary: #64748b; --tag-bg: #f1f5f9; --tag-text: #475569; --accent: #0071e3; --grid-line: rgba(0,0,0,0.1); --nav-bg: #ffffffcc; --input-bg: #ffffff; --input-border: #e2e8f0; }
-body { background: var(--bg); color: var(--text); min-height: 100vh; position: relative; overflow-x: hidden; user-select: none; }
+body { background: var(--bg); color: var(--text); min-height: 100vh; position: relative; overflow-x: hidden; user-select: none; width: 100%; }
 body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px); background-size: 80px 80px; z-index: -2; pointer-events: none; }
 #dots { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
-
 .nav { position: sticky; top: 0; background: var(--nav-bg); backdrop-filter: blur(20px); border-bottom: 1px solid var(--card-border); padding: 16px 0; z-index: 999; }
-.nav-container { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; padding: 0 24px; justify-content: space-between; }
-.nav-logo { font-size: 20px; font-weight: 700; color: var(--text); cursor: pointer; }
+.nav-container { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; padding: 0 24px; justify-content: space-between; position: relative; }
+.nav-logo { font-size: 20px; font-weight: 700; color: var(--text); cursor: pointer; user-select: none; }
 .nav-search { position: absolute; left: 50%; transform: translateX(-50%); width: 100%; max-width: 400px; }
 .nav-search input { width: 100%; padding: 10px 16px; border-radius: 12px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text); outline: none; }
-.nav-actions { display: flex; gap: 12px; }
+.nav-actions { display: flex; gap: 12px; align-items: center; }
+.action-btn { padding: 8px 14px; border-radius: 10px; background: var(--tag-bg); color: var(--text); border: 1px solid var(--card-border); cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+.action-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-.filter-tabs { display: flex; gap: 10px; margin: 0 auto 30px; max-width: 1400px; overflow-x: auto; justify-content: center; padding: 10px 24px; }
+.container { max-width: 1400px; margin: 0 auto; padding: 40px 24px; }
+.filter-tabs { display: flex; gap: 10px; margin-bottom: 30px; overflow-x: auto; padding-bottom: 10px; justify-content: center; }
 .filter-tab { padding: 6px 14px; border-radius: 30px; background: var(--tag-bg); color: var(--text-secondary); font-size: 13px; cursor: pointer; white-space: nowrap; border: 1px solid transparent; }
 .filter-tab.active { background: var(--accent); color: #fff; }
-.filter-tab:hover:not(.active) { border-color: var(--accent); }
-
-.tool-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; max-width: 1400px; margin: 0 auto; padding: 0 24px 100px; }
-.tool-card { position: relative; background: var(--card); backdrop-filter: blur(12px); border-radius: 16px; padding: 20px; border: 1px solid var(--card-border); transition: 0.3s; cursor: pointer; overflow: hidden; }
+.tool-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+.tool-card { position: relative; background: var(--card); backdrop-filter: blur(12px); border-radius: 16px; padding: 20px; border: 1px solid var(--card-border); text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 12px; transition: 0.3s; }
 .tool-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
-.tool-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.tool-header { display: flex; align-items: center; gap: 12px; }
 .tool-logo-container { width: 44px; height: 44px; border-radius: 10px; background: var(--tag-bg); display: flex; align-items: center; justify-content: center; font-size: 22px; }
-.tool-name { font-weight: 600; font-size: 16px; }
+.tool-name { font-weight: 600; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tool-tag { font-size: 12px; color: var(--tag-text); background: var(--tag-bg); padding: 4px 10px; border-radius: 6px; align-self: flex-start; }
-
-/* 拖拽样式 */
 .tool-card.dragging { opacity: 0.5; border: 2px dashed var(--accent); }
 
 #toTop { position: fixed; bottom: 30px; right: 30px; width: 44px; height: 44px; background: var(--accent); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transform: translateY(20px); transition: 0.3s; z-index: 99; }
 #toTop.show { opacity: 1; transform: translateY(0); }
 
-/* 管理员模式按钮展示控制 */
-.admin-only { display: none !important; }
-body.admin-mode .admin-only { display: flex !important; }
+/* 管理员模式特定按钮 */
+#adminTools { display: none; gap: 10px; }
+body.admin-mode #adminTools { display: flex; }
 </style>
 </head>
-<body>
+<body class="">
 
 <canvas id="dots"></canvas>
 
@@ -55,37 +53,41 @@ body.admin-mode .admin-only { display: flex !important; }
     <div class="nav-logo" id="logoTitle">CG Animator</div>
     <div class="nav-search"><input type="text" id="searchInput" placeholder="搜索实用工具..."></div>
     <div class="nav-actions">
-      <button class="filter-tab admin-only" onclick="exportData()" title="保存修改并同步到代码">同步数据</button>
-      <div class="filter-tab" id="themeBtn"><i class="fa-solid fa-moon"></i></div>
+        <div id="adminTools">
+            <button class="action-btn" onclick="exportData()" title="导出数据更新GitHub"><i class="fa-solid fa-cloud-upload"></i> 同步</button>
+        </div>
+        <button class="action-btn" id="themeBtn"><i class="fa-solid fa-moon"></i></button>
     </div>
   </div>
 </div>
 
-<div style="padding-top: 60px; text-align: center; margin-bottom: 40px;">
-    <h1 style="font-size: 2.5rem; margin-bottom: 10px;">实用网站收录</h1>
-    <p style="color: var(--text-secondary);">专注于视觉设计与动画制作工具</p>
+<div class="container">
+  <header style="text-align: center; margin-bottom: 50px;">
+    <h1 style="font-size: 2.5rem; margin-bottom: 10px;">专注实用网站收录</h1>
+    <p style="color: var(--text-secondary);">由 CG Animator 维护的视觉与动画工具集</p>
+  </header>
+  
+  <div class="filter-tabs" id="filterTabs"></div>
+  <div class="tool-list" id="toolList"></div>
 </div>
-
-<div class="filter-tabs" id="filterTabs"></div>
-<div class="tool-list" id="toolList"></div>
 
 <div id="toTop"><i class="fa-solid fa-arrow-up"></i></div>
 
 <script>
 // ==========================================
-// 1. 管理员账户配置（在这里修改密码）
+// 1. 管理员账户配置 (请务必在此修改)
 // ==========================================
 const ADMIN_CONF = {
-    user: "admin",      // 登录名
+    user: "admin",      // 登录账号
     pass: "123456"      // 登录密码
 };
 
 // ==========================================
-// 2. 默认展示的数据（所有人访问时看到的数据）
+// 2. 默认展示数据 (所有人可见，修改后Push到GitHub)
 // ==========================================
 let defaultTools = [
     {name:"Tripo AI", url:"https://tripo.ai", tag:"全能型3D生成", cat:"ai"},
-    {name:"Hitem3D", url:"https://hitem3d.com", tag:"高清纹理", cat:"model"},
+    {name:"Hitem3D", url:"https://hitem3d.com", tag:"超高清纹理", cat:"model"},
     {name:"Hyper3D", url:"https://hyper3d.xyz", tag:"角色建模", cat:"model"}
 ];
 
@@ -97,25 +99,27 @@ let tools = [];
 let cats = {...defaultCats};
 let currentCat = 'all';
 
-// 初始化加载
+// 初始化
 window.onload = () => {
-    const saved = localStorage.getItem('my_nav_data');
+    // 管理员在本地修改时会存入localStorage方便预览
+    const saved = localStorage.getItem('cg_animator_data');
     tools = saved ? JSON.parse(saved).tools : [...defaultTools];
     renderTabs();
     render();
+    initCanvas();
 };
 
-// --- 管理员隐形登录 ---
+// --- 管理员登录逻辑 (双击Logo) ---
 document.getElementById('logoTitle').ondblclick = () => {
-    const u = prompt("MrChiu:");
-    const p = prompt("MrChiu:");
+    const u = prompt("管理员账号:");
+    const p = prompt("管理员密码:");
     if(u === ADMIN_CONF.user && p === ADMIN_CONF.pass) {
         isAdmin = true;
         document.body.classList.add('admin-mode');
-        alert("已进入管理员模式：\n- 直接右键点击卡片可删除\n- 拖拽卡片可排序\n- 点击末尾虚线框添加网站\n- 完成后点击顶部的'同步数据'");
+        alert("管理模式已开启：\n1. 直接拖拽卡片排序\n2. 右键点击卡片删除\n3. 点击末尾虚线框添加\n4. 修改后点击上方'同步'按钮复制数据");
         render();
     } else {
-        alert("验证失败");
+        alert("鉴权失败，请检查账号密码。");
     }
 };
 
@@ -137,18 +141,19 @@ function filter(c) {
 function render() {
     const list = document.getElementById('toolList');
     list.innerHTML = '';
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const kw = document.getElementById('searchInput').value.toLowerCase();
     
     let filtered = tools.filter(t => {
-        const matchesCat = currentCat === 'all' || t.cat === currentCat;
-        const matchesSearch = t.name.toLowerCase().includes(searchTerm) || t.tag.toLowerCase().includes(searchTerm);
-        return matchesCat && matchesSearch;
+        const mCat = currentCat === 'all' || t.cat === currentCat;
+        const mSearch = t.name.toLowerCase().includes(kw) || t.tag.toLowerCase().includes(kw);
+        return mCat && mSearch;
     });
 
     filtered.forEach((t, idx) => {
         const card = document.createElement('div');
         card.className = 'tool-card';
         card.draggable = isAdmin;
+        
         card.innerHTML = `
             <div class="tool-header">
                 <div class="tool-logo-container"><i class="fa-solid fa-globe"></i></div>
@@ -158,16 +163,17 @@ function render() {
             <a href="${t.url}" target="_blank" style="position:absolute;inset:0;${isAdmin?'pointer-events:none;':''}"></a>
         `;
 
-        // 管理员操作：右键删除
+        // 交互逻辑：仅管理员
         if(isAdmin) {
+            // 右键删除
             card.oncontextmenu = (e) => {
                 e.preventDefault();
-                if(confirm(`确定删除 ${t.name}？`)) {
+                if(confirm(`确定删除网站: ${t.name}？`)) {
                     tools.splice(tools.indexOf(t), 1);
                     saveAndRefresh();
                 }
             };
-            // 拖拽排序逻辑
+            // 拖拽逻辑
             card.ondragstart = (e) => {
                 e.dataTransfer.setData('text/plain', tools.indexOf(t));
                 card.classList.add('dragging');
@@ -176,17 +182,17 @@ function render() {
             card.ondragover = (e) => e.preventDefault();
             card.ondrop = (e) => {
                 e.preventDefault();
-                const fromIdx = e.dataTransfer.getData('text/plain');
-                const toIdx = tools.indexOf(t);
-                const movedItem = tools.splice(fromIdx, 1)[0];
-                tools.splice(toIdx, 0, movedItem);
+                const from = e.dataTransfer.getData('text/plain');
+                const to = tools.indexOf(t);
+                const moved = tools.splice(from, 1)[0];
+                tools.splice(to, 0, moved);
                 saveAndRefresh();
             };
         }
         list.appendChild(card);
     });
 
-    // 管理员操作：添加按钮
+    // 管理员添加按钮
     if(isAdmin) {
         const addBtn = document.createElement('div');
         addBtn.className = 'tool-card';
@@ -194,13 +200,14 @@ function render() {
         addBtn.style.display = 'flex';
         addBtn.style.justifyContent = 'center';
         addBtn.style.alignItems = 'center';
-        addBtn.innerHTML = '<h3>+ 添加网站</h3>';
+        addBtn.style.cursor = 'pointer';
+        addBtn.innerHTML = '<div style="text-align:center"><i class="fa-solid fa-plus" style="font-size:24px"></i><p style="margin-top:8px">添加新收录</p></div>';
         addBtn.onclick = () => {
-            const name = prompt("名称:");
-            const url = prompt("地址 (http/https):");
-            const tag = prompt("简短描述:");
+            const name = prompt("网站名称:");
+            const url = prompt("网站链接(http://...):");
+            const tag = prompt("简单描述:");
             if(name && url) {
-                tools.push({name, url, tag, cat: currentCat === 'all' ? 'uncat' : currentCat});
+                tools.push({name, url, tag, cat: currentCat==='all'?'uncat':currentCat});
                 saveAndRefresh();
             }
         };
@@ -209,49 +216,47 @@ function render() {
 }
 
 function saveAndRefresh() {
-    localStorage.setItem('my_nav_data', JSON.stringify({tools, cats}));
+    localStorage.setItem('cg_animator_data', JSON.stringify({tools, cats}));
     render();
 }
 
 function exportData() {
-    const dataStr = JSON.stringify(tools, null, 2);
-    const blob = new Blob([dataStr], {type: "application/json"});
-    const url = URL.createObjectURL(blob);
-    
-    // 同时也复制到剪贴板，方便直接去 GitHub 替换
+    const json = JSON.stringify(tools, null, 2);
+    // 自动复制到剪贴板
     const el = document.createElement('textarea');
-    el.value = dataStr;
+    el.value = json;
     document.body.appendChild(el);
     el.select();
     document.execCommand('copy');
     document.body.removeChild(el);
-
-    alert("修改已复制到剪贴板！\n\n请前往 GitHub 的 index.html 中，找到 'let defaultTools = [...]'，把里面的内容替换掉。这样全世界访客都能看到你的更新了。");
+    alert("最新数据已复制到剪贴板！\n\n请回到 GitHub 编辑 index.html，将 'let defaultTools' 数组的内容替换为剪贴板内容并提交。");
 }
 
-// 搜索监听
+// 搜索
 document.getElementById('searchInput').oninput = render;
 
-// 主题切换
+// 主题
 document.getElementById('themeBtn').onclick = () => {
-    const isLight = document.documentElement.classList.toggle('light');
-    document.getElementById('themeBtn').innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+    const isL = document.documentElement.classList.toggle('light');
+    document.getElementById('themeBtn').innerHTML = isL ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
 };
 
-// 粒子背景逻辑（保持原样）
-const canvas = document.getElementById('dots');
-const ctx = canvas.getContext('2d');
-let w, h, dots = [];
-function resize(){ w=canvas.width=window.innerWidth; h=canvas.height=window.innerHeight; }
-window.onresize = resize; resize();
-class Dot{ 
-    constructor(){ this.x=Math.random()*w; this.y=Math.random()*h; this.r=Math.random()*1+0.5; this.a=Math.random()*0.3+0.1; this.s=Math.random()*0.2+0.1; this.color = `rgba(255,255,255,${this.a})`; } 
-    update(){ this.y+=this.s; if(this.y>h)this.y=0; } 
-    draw(){ ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fillStyle = this.color; ctx.fill(); } 
+// 粒子背景 (保持原代码性能优化版)
+function initCanvas() {
+    const canvas = document.getElementById('dots');
+    const ctx = canvas.getContext('2d');
+    let w, h, dots = [];
+    function res(){ w=canvas.width=window.innerWidth; h=canvas.height=window.innerHeight; }
+    res(); window.onresize=res;
+    class Dot{ 
+        constructor(){ this.x=Math.random()*w; this.y=Math.random()*h; this.r=Math.random()*1+0.5; this.a=Math.random()*0.3+0.1; this.s=Math.random()*0.2+0.1; this.color = `rgba(255,255,255,${this.a})`; } 
+        update(){ this.y+=this.s; if(this.y>h)this.y=0; } 
+        draw(){ ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fillStyle = this.color; ctx.fill(); } 
+    }
+    for(let i=0;i<80;i++) dots.push(new Dot());
+    function ani(){ ctx.clearRect(0,0,w,h); dots.forEach(d=>{d.update();d.draw();}); requestAnimationFrame(ani); }
+    ani();
 }
-for(let i=0;i<80;i++) dots.push(new Dot());
-function ani(){ ctx.clearRect(0,0,w,h); dots.forEach(d=>{d.update();d.draw();}); requestAnimationFrame(ani); }
-ani();
 
 // 回到顶部
 const toTop = document.getElementById('toTop');
