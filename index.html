@@ -299,7 +299,7 @@ header p { font-size: 16px; color: var(--text-secondary); max-width: 700px; marg
 // ==========================================
 // 核心数据存放区（现在为空，请稍后直接拖拽你的备份文件进来即可自动填充）
 // ==========================================
-const DEFAULT_DATA = {
+{
   "cats": {
     "ai": "AI生成",
     "uncat": "未分类",
@@ -307,7 +307,8 @@ const DEFAULT_DATA = {
     "design": "设计",
     "Tool": "工具",
     "Community": "社区",
-    "Game": "游戏"
+    "Game": "游戏",
+    "private": "🔒 未启用"
   },
   "tools": [
     {
@@ -662,28 +663,32 @@ const DEFAULT_DATA = {
       "logo": "https://img.cg3da.com/wp-content/uploads/2022/08/logo.png",
       "url": "https://www.cg3da.com/",
       "tag": "会员免费CG资产",
-      "cat": "design"
+      "cat": "design",
+      "hidden": true
     },
     {
       "name": "CG资源仓库",
       "logo": "https://www.zycku.com/wp-content/uploads/2021/04/favicon.ico",
       "url": "https://www.zycku.com/",
       "tag": "专注CG资源",
-      "cat": "design"
+      "cat": "design",
+      "hidden": true
     },
     {
       "name": "可动程序",
       "logo": "https://cgexe.com/wp-content/uploads/2022/05/favicon.png",
       "url": "https://cgexe.com/",
       "tag": "付费分享CG资讯",
-      "cat": "design"
+      "cat": "design",
+      "hidden": true
     },
     {
       "name": "CGTall",
       "logo": "https://www.cgtall.com/favicon.ico",
       "url": "https://www.cgtall.com/",
       "tag": "CG教程资源平台",
-      "cat": "design"
+      "cat": "design",
+      "hidden": true
     },
     {
       "name": "UV Checker",
@@ -718,7 +723,8 @@ const DEFAULT_DATA = {
       "logo": "https://jx3.xoyo.com/favicon.ico",
       "url": "https://jx3.xoyo.com/",
       "tag": "《剑网三》官网",
-      "cat": "Game"
+      "cat": "Game",
+      "hidden": true
     },
     {
       "name": "Civital",
@@ -754,7 +760,8 @@ const DEFAULT_DATA = {
       "logo": "https://jiemahao.com/wp-content/uploads/2023/07/favicon.ico",
       "url": "https://jiemahao.com/",
       "tag": "虚拟号码",
-      "cat": "Practical"
+      "cat": "Practical",
+      "hidden": true
     },
     {
       "name": "Google专用邮箱",
@@ -768,7 +775,8 @@ const DEFAULT_DATA = {
       "logo": "https://www.seasunwbl.com/favicon.ico",
       "url": "https://www.seasunwbl.com/",
       "tag": "西山居官方交易平台",
-      "cat": "Game"
+      "cat": "Game",
+      "hidden": true
     },
     {
       "name": "Vercel",
@@ -785,56 +793,6 @@ const DEFAULT_DATA = {
       "cat": "Community"
     }
   ]
-}
-
-// 系统变量
-let isAdmin = localStorage.getItem('isAdmin') === 'true';
-let tools = []; 
-let catNameMap = {}; 
-let visitCounts = {}; 
-let favorites = {}; 
-let pinned = {}; 
-let currentCat = 'all'; let currentEditIndex = -1; let currentEditCatId = ''; let isAddMode = false; let lastClickTime = {};
-let isDragging = false; let dragStartX = 0; let dragStartY = 0; let dragOffsetX = 0; let dragOffsetY = 0; let dragged = null; let dragStartIndex = -1;
-
-// 批量模式变量
-let isBatchMode = false;
-let selectedCards = new Set();
-
-const commonIcons = ['fa-globe','fa-star','fa-pencil','fa-code','fa-image','fa-video','fa-music','fa-gamepad','fa-book','fa-shopping-cart','fa-cloud','fa-database','fa-tools','fa-palette','fa-camera','fa-user','fa-briefcase','fa-school','fa-car','fa-home','fa-lock','fa-search'];
-let selectedIcon = 'fa-globe'; 
-
-const list = document.getElementById('toolList'); const search = document.getElementById('search'); const filterTabs = document.getElementById('filterTabs'); const editModal = document.getElementById('editModal'); const overlay = document.getElementById('overlay'); const contextMenu = document.getElementById('contextMenu'); const catContextMenu = document.getElementById('catContextMenu');
-
-function safeLocalStorageSet(key, value) { try { localStorage.setItem(key, value); } catch (e) { console.warn('存储超限', e); } }
-function getValidHostname(url) { if (!url || !/^https?:\/\//i.test(url)) return ''; try { return new URL(url).hostname.replace(/^www\./i,''); } catch(e) { return ''; } }
-function getWebsiteFavicon(url) { const h = getValidHostname(url); return h ? `https://favicon.baidu.com/favicon?domain=${h}` : ''; }
-
-function saveTools() { if(isAdmin) safeLocalStorageSet('admin_tools', JSON.stringify(tools)); }
-function saveCats() { if(isAdmin) safeLocalStorageSet('admin_cats', JSON.stringify(catNameMap)); }
-function saveVisitCounts() { safeLocalStorageSet('visitCounts', JSON.stringify(visitCounts)); }
-function saveFavorites() { safeLocalStorageSet('favorites', JSON.stringify(favorites)); }
-function savePinned() { safeLocalStorageSet('pinned', JSON.stringify(pinned)); }
-
-function loadData() {
-  const savedVisits = localStorage.getItem('visitCounts'); 
-  const savedFavs = localStorage.getItem('favorites');
-  const savedPinned = localStorage.getItem('pinned');
-  
-  visitCounts = savedVisits ? JSON.parse(savedVisits) : {};
-  favorites = savedFavs ? JSON.parse(savedFavs) : {};
-  pinned = savedPinned ? JSON.parse(savedPinned) : {};
-
-  if (isAdmin) {
-    const savedTools = localStorage.getItem('admin_tools'); 
-    const savedCats = localStorage.getItem('admin_cats');
-    tools = savedTools ? JSON.parse(savedTools) : JSON.parse(JSON.stringify(DEFAULT_DATA.tools));
-    catNameMap = savedCats ? JSON.parse(savedCats) : JSON.parse(JSON.stringify(DEFAULT_DATA.cats));
-    if (!catNameMap['private']) { catNameMap['private'] = '🔒 未启用'; saveCats(); }
-  } else {
-    tools = JSON.parse(JSON.stringify(DEFAULT_DATA.tools));
-    catNameMap = JSON.parse(JSON.stringify(DEFAULT_DATA.cats));
-  }
 }
 
 // ⭐ 这里的 UI 刷新逻辑也加上了红色高亮的退出按钮样式
