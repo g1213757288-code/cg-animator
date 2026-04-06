@@ -264,7 +264,16 @@ const ADMIN_PASSWORD = "123";
    每次你导出后，就把导出的代码粘贴在这里替换掉！
    ========================================== */
 const DEFAULT_DATA = {
-   "tools": [
+  "cats": {
+    "ai": "AI生成",
+    "uncat": "未分类",
+    "Practical": "实用",
+    "design": "设计",
+    "Tool": "工具",
+    "Community": "社区",
+    "Game": "游戏"
+  },
+  "tools": [
     {
       "name": "VJShi",
       "logo": "https://www.vjshi.com/favicon.ico",
@@ -599,7 +608,8 @@ const DEFAULT_DATA = {
       "logo": "https://www.orchardsims.com/favicon.ico",
       "url": "https://www.orchardsims.com/",
       "tag": "模拟人生4mod汉化网",
-      "cat": "Game"
+      "cat": "Game",
+      "hidden": true
     },
     {
       "name": "Microsoft",
@@ -690,7 +700,8 @@ const DEFAULT_DATA = {
       "logo": "https://huitugou.com/favicon.ico",
       "url": "https://huitugou.com/",
       "tag": "设计灵感素材集散地",
-      "cat": "design"
+      "cat": "design",
+      "hidden": true
     },
     {
       "name": "腾讯云",
@@ -734,55 +745,8 @@ const DEFAULT_DATA = {
       "tag": "全球开源心脏",
       "cat": "Community"
     }
-  ],
-  "cats": {
-    "ai": "AI生成",
-    "uncat": "未分类",
-    "Practical": "实用",
-    "design": "设计",
-    "Tool": "工具",
-    "Community": "社区",
-    "Game": "游戏"
-  },
-  "visitCounts": {
-    "https://mail.qq.com": 4,
-    "https://www.vjshi.com/": 12,
-    "https://3d.hunyuan.tencent.com/": 2,
-    "https://www.doubao.com/": 3,
-    "https://jimeng.jianying.com/": 1,
-    "https://store.steampowered.com/": 1,
-    "https://store.epicgames.com/zh-CN/": 1,
-    "https://gemini.google.com/": 5,
-    "https://www.microsoft.com/zh-cn": 3,
-    "https://fanyi.baidu.com/": 1,
-    "https://www.nexusmods.com/": 1,
-    "https://www.zycku.com/": 1,
-    "https://www.runninghub.cn/": 1,
-    "https://www.qmai.vip/": 1,
-    "https://www.fab.com/": 2,
-    "https://app.tapnow.ai/": 2,
-    "https://cgexe.com/": 1,
-    "https://askgo.ai/": 1,
-    "https://www.logitechg.com/en-gb": 1,
-    "https://www.sidefx.com/": 1,
-    "https://www.maxon.net/zh": 1,
-    "https://home.otoy.com/": 2,
-    "https://www.behance.net/": 1,
-    "https://mail.google.com/": 1,
-    "https://www.3ddaz.com/": 1,
-    "http://www.modown.cn/": 1,
-    "https://cloud.tencent.com/": 1,
-    "https://jiemahao.com/": 1,
-    "https://a38.top/": 2,
-    "https://www.cgmodel.com/": 4
-  },
-  "favorites": {
-    "https://www.vjshi.com/": false,
-    "https://3d.hunyuan.tencent.com/": false,
-    "https://mail.qq.com": false
-  }
+  ]
 }
-
 // 系统变量
 let isAdmin = localStorage.getItem('isAdmin') === 'true';
 let tools = []; 
