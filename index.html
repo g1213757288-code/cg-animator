@@ -140,6 +140,18 @@ header p { font-size: 16px; color: var(--text-secondary); max-width: 700px; marg
   .nav-actions { justify-content: center; width: 100%; } 
 }
 @media (max-width:480px){.tool-list{grid-template-columns:1fr;}}
+.nav-logo {
+    display: flex;
+    align-items: center;  /* 让 Logo 和文字上下居中对齐 */
+    gap: 10px;            /* Logo 和文字之间的间距（文字会自动往右顺延） */
+}
+
+.header-logo {
+    width: 26px;          /* Logo 的大小，可以根据喜好微调 */
+    height: 26px;
+    object-fit: contain;
+    border-radius: 50%;   /* 确保图片是完美的圆形 */
+}
 </style>
 </head>
 <body>
@@ -147,7 +159,10 @@ header p { font-size: 16px; color: var(--text-secondary); max-width: 700px; marg
 <canvas id="dots"></canvas>
 <div class="nav">
   <div class="nav-container">
-    <div class="nav-logo">CG Animator</div>
+    <div class="nav-logo">
+    <img src="./favicon.png" alt="Logo" class="header-logo">
+    <span>CG Animator</span>
+</div>
     <div class="nav-search">
       <input type="text" id="search" placeholder="搜索实用网站...">
     </div>
